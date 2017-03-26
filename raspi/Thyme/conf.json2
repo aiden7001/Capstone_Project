@@ -1,0 +1,34 @@
+{
+    "useprotocol": "http",
+    "cse": {
+        "cbhost": "61.40.220.158",
+        "cbport": "20001",
+        "cbname": "~/CB00061/18644122219",
+        "cbcseid": "CB00061"
+    },
+    "ae": {
+        "aeid": "SHJ-tF-Oq000000000004931720896",
+        "appid": "0.2.481.1.1",
+        "appname": "ae-edu0",
+        "appport": "9727",
+        "bodytype": "xml",
+        "tasport": "3105"
+    },
+    "cnt": [
+        {
+            "parentpath": "/ae-edu0",
+            "ctname": "cnt-co2"
+        },
+        {
+            "parentpath": "/ae-edu0",
+            "ctname": "cnt-led"
+        }
+    ],
+    "sub": [
+        {
+            "parentpath": "/ae-edu0/cnt-led",
+            "subname": "sub-ctrl",
+            "nu": "mqtt:///oneM2M/req/+/SHJ-tF-Oq000000000004931720896"
+        }
+    ]
+}
