@@ -1,38 +1,49 @@
 {
     "useprotocol": "http",
     "cse": {
+// cbhost는 우리가 사용할 서버를 선택하는 것이다.
+// 아래에 호스트로 적혀진 "203.253.128.151" 서버는 MOBIUS 데이터베이스가 생성되어 전자부품연구원에서 개발자들에게 제공해준 오픈 서버이다.
         "cbhost": "203.253.128.151",
+// 서버에서 데이터를 주고받기 위해 열어놓은 port번호를 입력한다.
         "cbport": "7579",
+// cbname은 mobius-yt로 통일해야한다. 우리가 생성하는 container들은 http://203.253.128.151/mobius-yt위치의 하위 디렉토리로 생성된다.
         "cbname": "mobius-yt",
         "cbcseid": "/mobius-yt"
     },
+// ae에서는 우리가 mobius-yt의 하위 에 생성할 디렉토리의 정보를 입력한다.
+// 결과적으로 bicycle_test 디렉토리가 mobius-yt의 하위 디렉토리로 생성되게 된다.
     "ae": {
-        "aeid": "dongguk_capstone",
+        "aeid": "bicycle_test",
         "appid": "0.2.481.1.1",
-        "appname": "dongguk_capstone",
+        "appname": "bicycle_test",
         "appport": "9727",
         "bodytype": "xml",
+// tasport는 이곳에서 설정한 &CUBE와 우리가 개발한 TAS가 소켓통신을 하기위해 열어주는 포트를 선정하는 것이다.
         "tasport": "3105"
     },
     "cnt": [
         {
-            "parentpath": "/dongguk_capstone",
+            "parentpath": "/bicycle_test",
             "ctname": "parking_mode"
         },
         {
-            "parentpath": "/dongguk_capstone",
-            "ctname": "beacon_number"
+            "parentpath": "/bicycle_test",
+            "ctname": "parking_location"
         },
         {
-            "parentpath": "/dongguk_capstone",
-            "ctname": "stolen"
+            "parentpath": "/bicycle_test",
+            "ctname": "gps_location"
+        },
+        {
+            "parentpath": "/bicycle_test",
+            "ctname": "lost_bicycle"
         }
     ],
     "sub": [
         {
-            "parentpath": "/dongguk_capstone/parking_mode",
+            "parentpath": "/bicycle_test/parking_mode",
             "subname": "down_location",
-            "nu": "mqtt://203.253.128.151/dongguk_capstone"
+            "nu": "mqtt://203.253.128.151/bicycle_test"
         }
     ]
 }
