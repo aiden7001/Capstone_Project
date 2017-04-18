@@ -62,10 +62,13 @@ class BeaconCondition(threading.Thread):
                                         count = count+1
                                 else:
                                         count = 0
-                                l_check = stop_check
-                                if count >= 3:
-                                        print "no beacon"
                                 
+                                if count >= 3:
+                                        if transferred_info != "nobeacon":
+                                                s_1.sendall('{"ctname":"parking_state", "con":"nobeacon"}')
+                                                transferred_info = "nobeacon"
+                                        print "no beacon"
+                                l_check = stop_check
                         else:
                                 time.sleep(5)
 
