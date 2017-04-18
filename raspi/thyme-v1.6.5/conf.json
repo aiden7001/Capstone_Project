@@ -1,0 +1,43 @@
+{
+    "useprotocol": "http",
+    "cse": {
+        "cbhost": "203.253.128.151",
+        "cbport": "7579",
+        "cbname": "mobius-yt",
+        "cbcseid": "/mobius-yt",
+        "mqttport": "1883"
+    },
+    "ae": {
+        "aeid": "dongguk-capstone",
+        "appid": "0.2.481.1.1",
+        "appname": "dongguk-capstone",
+        "appport": "11001",
+        "bodytype": "xml",
+        "tasport": "7622"
+    },
+    "cnt": [
+        {
+            "parentpath": "/dongguk-capstone",
+            "ctname": "parking_mode"
+        },
+        {
+            "parentpath": "/dongguk-capstone",
+            "ctname": "beacon_number"
+        },
+        {
+            "parentpath": "/dongguk-capstone",
+            "ctname": "parking_location"
+        },
+        {
+            "parentpath": "/dongguk-capstone",
+            "ctname": "parking_state"
+        }
+    ],
+    "sub": [
+        {
+            "parentpath": "/dongguk-capstone/parking_mode",
+            "subname": "sub-ctrl",
+            "nu": "mqtt://203.253.128.151/dongguk-capstone"
+        }
+    ]
+}
