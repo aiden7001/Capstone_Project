@@ -1,6 +1,8 @@
 package test.com.a170326;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +12,9 @@ import android.widget.LinearLayout;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
+import com.skp.Tmap.TMapMarkerItem;
+import com.skp.Tmap.TMapOverlay;
+import com.skp.Tmap.TMapOverlayItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapView;
 
@@ -22,7 +27,7 @@ import java.util.ArrayList;
 public class SelectMapLocationActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback {
 
 
-    private Context mContect = null;
+    private Context mContext = null;
     private boolean m_bTrackingMode = true;
 
     private TMapGpsManager tmapgps = null;
@@ -30,6 +35,8 @@ public class SelectMapLocationActivity extends AppCompatActivity implements TMap
     private TMapView tmapview = null;
     private static String mApiKey = "759b5f01-999a-3cb1-a9ed-f05e2f121476";
     private static int mMarkerID;
+    private boolean m_bOverlayMode = false;
+    private ArrayList<Bitmap> mOverlayList;
 
     private ArrayList<TMapPoint> m_tmapPoint = new ArrayList<TMapPoint>();
     private ArrayList<String> mArrayMarkerID = new ArrayList<String>();
@@ -52,7 +59,7 @@ public class SelectMapLocationActivity extends AppCompatActivity implements TMap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_selectmaplocation);
 
-        mContect = this;
+        mContext = this;
 
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view2);
         tmapview = new TMapView(this);
@@ -72,5 +79,9 @@ public class SelectMapLocationActivity extends AppCompatActivity implements TMap
         tmapgps.OpenGps();
         tmapview.setTrackingMode(true);
         tmapview.setSightVisible(true);
+
+
+
     }
+
 }

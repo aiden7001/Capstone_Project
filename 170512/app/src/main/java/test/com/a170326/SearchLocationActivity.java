@@ -183,7 +183,7 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
         });
 
         input_location = (EditText)findViewById(R.id.search_location);
-        /*input_location.addTextChangedListener(new TextWatcher() {
+        input_location.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -203,12 +203,13 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
                 //((ListviewAdapter)listView.getAdapter()).getFilter().filter(filterText);
 
             }
-        });*/
+        });
 
         location_bt = (Button)findViewById(R.id.location_bt);
         location_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                adapter.clearItem();
                 location = input_location.getText().toString();
 
                 Tmapdata.findAllPOI(location, new TMapData.FindAllPOIListenerCallback() {
