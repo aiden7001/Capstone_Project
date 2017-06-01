@@ -69,6 +69,26 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode){
+            case 0:
+                String address = data.getStringExtra("input");
+                String lat = data.getStringExtra("lat");
+                String  lon = data.getStringExtra("lon");
+
+                intent_return = new Intent();
+                intent_return.putExtra("input", address);
+                //Toast.makeText(SelectMapLocationActivity.this, address, Toast.LENGTH_SHORT).show();
+                intent_return.putExtra("lat", lat);
+                intent_return.putExtra("lon", lon);
+                setResult(2, intent_return);
+                finish();
+        }
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searchlocation);
@@ -178,7 +198,7 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
             @Override
             public void onClick(View v) {
                 Intent intent_map = new Intent(SearchLocationActivity.this, SelectMapLocationActivity.class);
-                startActivity(intent_map);
+                startActivityForResult(intent_map,0);
             }
         });
 

@@ -2,6 +2,7 @@ package test.com.a170326;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -62,15 +64,20 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback{
+public class MainActivity extends AppCompatActivity {
 
-    private Context mContect = null;
+    public static Context mContext = null;
     private boolean m_bTrackingMode = true;
 
     private TMapGpsManager tmapgps = null;
     private TMapData Tmapdata = new TMapData();
-    TMapView tmapview;
+    TMapView tmapview=null;
+    LocationManager mLM;
+    public static double Ddistance;
+    String Distance;
+    String mProvider = LocationManager.NETWORK_PROVIDER;
     private static String mApiKey = "759b5f01-999a-3cb1-a9ed-f05e2f121476";
+    private static String taasKey = "0NhsehhJAtunv%2BdlkgySNms8ZLzhBnAr1n43Cj76AQLZNNQdu5r4JAkT7pLjTD4D";
 
     private Button search;
     private Button route;
@@ -80,15 +87,18 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     //double latMe = 37.5657321;
     //double lonMe = 126.9786599;
-    TMapPoint start_point = null;
+    //TMapPoint start_point = null;
     //TMapPoint marker_point = new TMapPoint(latMe,lonMe);
-    TMapPoint dest_point = null;
+    //TMapPoint dest_point = null;
     private EditText input_start;
     private EditText input_dest;
-    private Double search_lat = null;
-    private Double search_lon = null;
-    private Double start_lat = null;
-    private Double start_lon = null;
+    TMapPoint start_point = null;
+    TMapPoint dest_point = null;
+    Double dest_lat = null;
+    Double dest_lon = null;
+    Double start_lat = null;
+    Double start_lon = null;
+
 
     TMapAddressInfo addressInfoSave = new TMapAddressInfo();
 
@@ -118,19 +128,19 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
      * HTTP CLIENT
      ***/
 
-    @Override
+    /*@Override
     public void onLocationChange(Location location) {
         if (m_bTrackingMode) {
             tmapview.setLocationPoint(location.getLongitude(), location.getLatitude());
         }
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (resultCode){
-            case 1:
+        switch (requestCode){
+            case 0:
                 String address = data.getStringExtra("input");
                 double lat = Double.parseDouble(data.getStringExtra("lat"));
                 double  lon = Double.parseDouble(data.getStringExtra("lon"));
@@ -140,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 input_start.setText(address);
                 start_point = new TMapPoint(lat,lon);
                 break;
-            case 2:
+            case 1:
                 address = data.getStringExtra("input");
                 lat = Double.parseDouble(data.getStringExtra("lat"));
                 lon = Double.parseDouble(data.getStringExtra("lon"));
@@ -161,16 +171,37 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         start();
 
-        mContect = this;
+        mContext = this;
 
-        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view);
+        //final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view);
 
         input_start = (EditText) findViewById(R.id.search_sta);
         input_dest = (EditText) findViewById(R.id.search_dest);
         search = (Button) findViewById(R.id.search_button);
         route = (Button) findViewById(R.id.route);
 
-        tmapview = new TMapView(this);
+        mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        tmapview = (TMapView) findViewById(R.id.map_view);
+        tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
+            @Override
+            public void SKPMapApikeySucceed() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setupMap();
+                    }
+                });
+            }
+
+            @Override
+            public void SKPMapApikeyFailed(String s) {
+
+            }
+        });
+        tmapview.setSKPMapApiKey(mApiKey);
+        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
+
+        /*tmapview = new TMapView(this);
         linearLayout.addView(tmapview);
         tmapview.setSKPMapApiKey(mApiKey);
 
@@ -190,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tmapgps.OpenGps();
 
         TMapPolyLine polyLine = new TMapPolyLine();
-        polyLine.setLineWidth(3);
+        polyLine.setLineWidth(3);*/
 
         input_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -312,6 +343,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 Tmapdata.findPathData(start_point, dest_point, new TMapData.FindPathDataListenerCallback() {
                     @Override
                     public void onFindPathData(TMapPolyLine tMapPolyLine) {
+                        //polyLine.setLineColor(Color.BLUE);
+                        //polyLine.setLineWidth(10);
+                        //Ddistance = polyLine.getDistance();
                         tmapview.addTMapPath(tMapPolyLine);
                         tmapview.setTrackingMode(true);
                     }
@@ -326,17 +360,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 tmapview.setZoomLevel(info.getTMapZoomLevel());*/
             }
         });
-
-    }
-
-    public void start() {
-        httpclient = new DefaultHttpClient();
-        /***  time out  ***/
-        httpclient.getParams().setParameter("http.protocol.expect-continue", false);
-        httpclient.getParams().setParameter("http.connection.timeout", 10000);
-        httpclient.getParams().setParameter("http.socket.timeout", 10000);
-        Log.i("psj", "heera : 00002");
-
 
     }
 
@@ -474,9 +497,13 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             String res_coordtype = params[6];
             String result = "";
             String pro = "";
-            String proo = "";
+            String prox = "";
+            String proy = "";
             String temp = "";
-            Double dd=0.0;
+            String result2 = "";
+            String proo = "";
+            Double dx=0.0;
+            Double dy=0.0;
             double coorx;
 
             /*** Add data to send ***/
@@ -543,13 +570,21 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 for (int i = 0; i < countriesArray.length(); i++) {
 
                     JSONObject JObject = countriesArray.getJSONObject(i);
+                    JSONObject JObject2 = countriesArray.getJSONObject(i);
 
                     result = JObject.getString("geometry");
+                    result2 = JObject2.getString("properties");
+                    proo = JObject2.getJSONObject("properties").getString("description");
                     pro = JObject.getJSONObject("geometry").getString("type");
-                    proo = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(0);
+                    prox = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(0);
+                    proy = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(1);
+
 
                     try{
-                        dd = Double.parseDouble(proo);
+                        dx = Double.parseDouble(prox);
+                        dy = Double.parseDouble(proy);
+
+                        addMarker(dy,dx,proo);
 
                     } catch (NumberFormatException e){
                     }
@@ -564,7 +599,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                     //received_user_email[i] = JObject.getString("description");
                     Log.i("whrcp",result);
                     Log.i("whrcp2",pro);
-                    Log.i("whrcp3",String.valueOf(dd));
+                    //Log.i("whrcp3",String.valueOf(dd));
 
 
                     /*rsiv_message[i] = JObject.getString("message");
@@ -604,6 +639,141 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
     }
 
-};
+    private void addMarker(double lat, double lng, String title) {
+        TMapMarkerItem item = new TMapMarkerItem();
+        TMapPoint point = new TMapPoint(lat, lng);
+        item.setTMapPoint(point);
+        //Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_add_marker);
+        //item.setIcon(bitmap);
+        item.setPosition(0.5f, 1);
+        item.setCalloutTitle(title);
+        //item.setCalloutSubTitle("sub " + title);
+        //Bitmap left = ((BitmapDrawable) ContextCompat.getDrawable(this, android.R.drawable.ic_dialog_alert)).getBitmap();
+        //item.setCalloutLeftImage(left);
+        //Bitmap right = ((BitmapDrawable) ContextCompat.getDrawable(this, android.R.drawable.ic_input_get)).getBitmap();
+        //item.setCalloutRightButtonImage(right);
+        item.setCanShowCallout(true);
+        tmapview.addMarkerItem("m" + id, item);
+        id++;
+    }
+
+    int id = 0;
+
+    boolean isInitialized = false;
+
+    private void setupMap() {
+        isInitialized = true;
+        tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
+        tmapview.setCompassMode(true);
+        tmapview.setIconVisibility(true);
+        tmapview.setZoomLevel(15);
+        tmapview.setTrackingMode(true);
+        tmapview.setSightVisible(true);
+
+        tmapgps = new TMapGpsManager(MainActivity.this);
+        tmapgps.setMinTime(1000);
+        tmapgps.setMinDistance(5);
+        tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
+        //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
+        tmapgps.OpenGps();
+        //        mapView.setSightVisible(true);
+        //        mapView.setCompassMode(true);
+        //        mapView.setTrafficInfo(true);
+        //        mapView.setTrackingMode(true);
+        if (cacheLocation != null) {
+            moveMap(cacheLocation.getLatitude(), cacheLocation.getLongitude());
+            setMyLocation(cacheLocation.getLatitude(), cacheLocation.getLongitude());
+        }
+        /*mapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
+            @Override
+            public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
+                String message = null;
+                switch (typeView.getCheckedRadioButtonId()){
+                    case R.id.radio_start:
+                        start = tMapMarkerItem.getTMapPoint();
+                        message = "start";
+                        break;
+                    case R.id.radio_end:
+                        end = tMapMarkerItem.getTMapPoint();
+                        message = "end";
+                        break;
+                }
+                Toast.makeText(MainActivity.this,message + " setting",Toast.LENGTH_SHORT).show();
+            }
+        });*/
+    }
+
+    public void start() {
+        httpclient = new DefaultHttpClient();
+        /***  time out  ***/
+        httpclient.getParams().setParameter("http.protocol.expect-continue", false);
+        httpclient.getParams().setParameter("http.connection.timeout", 10000);
+        httpclient.getParams().setParameter("http.socket.timeout", 10000);
+        Log.i("psj", "heera : 00002");
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Location location = mLM.getLastKnownLocation(mProvider);
+        if (location != null) {
+            mListener.onLocationChanged(location);
+        }
+        mLM.requestSingleUpdate(mProvider, mListener, null);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mLM.removeUpdates(mListener);
+    }
+
+    Location cacheLocation = null;
+
+    private void moveMap(double lat, double lng) {
+        tmapview.setCenterPoint(lng, lat);
+    }
+
+    private void setMyLocation(double lat, double lng) {
+        //Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_place);
+        //tmapview.setIcon(bitmap);
+        tmapview.setLocationPoint(lng, lat);
+        tmapview.setIconVisibility(true);
+    }
+
+    LocationListener mListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            if (isInitialized) {
+                moveMap(location.getLatitude(), location.getLongitude());
+                setMyLocation(location.getLatitude(), location.getLongitude());
+            } else {
+                cacheLocation = location;
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
+}
 
 

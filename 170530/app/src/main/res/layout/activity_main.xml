@@ -53,10 +53,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/map_view"
-        android:layout_weight="10">
+        android:layout_height="wrap_content">
+
+        <com.skp.Tmap.TMapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="416dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -70,6 +72,8 @@
             android:layout_height="wrap_content"
             android:text="경로 검색"
             android:id="@+id/route"/>
+
     </LinearLayout>
+
 
 </LinearLayout>
