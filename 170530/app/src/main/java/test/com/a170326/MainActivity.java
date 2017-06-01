@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
     String Distance;
     String mProvider = LocationManager.NETWORK_PROVIDER;
     private static String mApiKey = "759b5f01-999a-3cb1-a9ed-f05e2f121476";
-    private static String taasKey = "0NhsehhJAtunv%2BdlkgySNms8ZLzhBnAr1n43Cj76AQLZNNQdu5r4JAkT7pLjTD4D";
 
     private Button search;
     private Button route;
