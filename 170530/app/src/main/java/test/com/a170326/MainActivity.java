@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("mini","main");
         setContentView(R.layout.activity_main);
 
+
         start();
 
         mContext = this;

@@ -12,8 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 /**
  * Created by ksm95 on 2017-05-07.
  */
@@ -23,6 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView register;
     private TextView login2;
     final Context context = this;
+
     //private Button google;
     //private Button facebook;
 
