@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static Context mContext = null;
     private boolean m_bTrackingMode = true;
-
+123
     private TMapGpsManager tmapgps = null;
     private TMapData Tmapdata = new TMapData();
     TMapView tmapview=null;
