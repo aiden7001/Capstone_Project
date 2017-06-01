@@ -92,6 +92,7 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searchlocation);
+        Log.d("mini","4");
 
         tmapgps2 = new TMapGpsManager(SearchLocationActivity.this);
         tmapgps2.setMinTime(1000);
@@ -107,6 +108,7 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
 
         listView = (ListView) findViewById(R.id.listview1);
         listView.setAdapter(adapter);
+        Log.d("mini","5");
 
         Tmapdata.findAllPOI("명동성당", new TMapData.FindAllPOIListenerCallback() {
             @Override
