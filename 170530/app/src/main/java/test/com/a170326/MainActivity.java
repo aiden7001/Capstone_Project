@@ -229,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent start_intent = new Intent(MainActivity.this, SearchLocationActivity.class);
                 Log.d("mini","2");
                 startActivityForResult(start_intent,0);
+
                 //startActivity(start_intent);
                 Log.d("mini","3");
 

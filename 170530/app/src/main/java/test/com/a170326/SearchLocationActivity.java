@@ -26,11 +26,6 @@ import java.util.ArrayList;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-/**
- * Created by Heera on 2017-05-01.
- */
-
-
 
 public class SearchLocationActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback{
 
@@ -108,24 +103,7 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
 
         listView = (ListView) findViewById(R.id.listview1);
         listView.setAdapter(adapter);
-        Log.d("mini","5");
 
-        Tmapdata.findAllPOI("명동성당", new TMapData.FindAllPOIListenerCallback() {
-            @Override
-            public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
-                for (int i = 0; i < poiItem.size(); i++) {
-                    TMapPOIItem item = poiItem.get(i);
-
-                    Log.d("통합검색", "POI Name: " + item.getPOIName().toString() + ", " +
-                            "Address: " + item.getPOIAddress().replace("null", "") + ", " + "Point: "
-                            + item.getPOIPoint().toString());
-
-                    //adapter.addItem(item.getPOIName(),null);
-
-                }
-            }
-
-        });
 
         current_loc = (Button) findViewById(R.id.current_loc);
         current_loc.setOnClickListener(new View.OnClickListener() {
