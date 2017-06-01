@@ -142,7 +142,6 @@ class BeaconFinder(threading.Thread):
                                 # info value changes to 0 from 1
                                 if info == 0:
                                         time.sleep(2)
-                                        print "deac"
                                         continue
 
                                 # if bea[2] == "39" data is exist
