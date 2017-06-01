@@ -117,11 +117,11 @@ public class MainActivity extends AppCompatActivity {
     /***
      * HTTP CLIENT
      ***/
-    public String URI_RECEIVE_USER_ID = "https://apis.skplanetx.com/tmap/routes?callback=&version=1&format=json&appKey=" + mApiKey;
+    /*public String URI_RECEIVE_USER_ID = "https://apis.skplanetx.com/tmap/routes?callback=&version=1&format=json&appKey=" + mApiKey;
     public static HttpClient httpclient;
     HttpPost httppost;
     private JSONArray countriesArray;
-    private JSONArray countries;
+    private JSONArray countries;*/
 
     /***
      * HTTP CLIENT
@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("mini","main");
         setContentView(R.layout.activity_main);
 
-        start();
+        //start();
 
         mContext = this;
 
@@ -179,15 +179,15 @@ public class MainActivity extends AppCompatActivity {
         search = (Button) findViewById(R.id.search_button);
         route = (Button) findViewById(R.id.route);
 
-        mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        tmapview = (TMapView) findViewById(R.id.map_view);
+        //mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        /*tmapview = (TMapView) findViewById(R.id.map_view);
         tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
             @Override
             public void SKPMapApikeySucceed() {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        setupMap();
+                        //setupMap();
                     }
                 });
             }
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         tmapview.setSKPMapApiKey(mApiKey);
-        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
+        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);*/
 
         /*tmapview = new TMapView(this);
         linearLayout.addView(tmapview);
@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-        Log.i("hhr", String.valueOf(tmapview.getLatitude()));
+        //Log.i("hhr", String.valueOf(tmapview.getLatitude()));
 
         /*search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -333,25 +333,34 @@ public class MainActivity extends AppCompatActivity {
         route.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(mContext, RouteActivity.class);
+                intent.putExtra("start_lat",Double.toString(start_point.getLatitude()));
+                intent.putExtra("start_lon",Double.toString(start_point.getLongitude()));
+                intent.putExtra("dest_lat",Double.toString(dest_point.getLatitude()));
+                intent.putExtra("dest_lon",Double.toString(dest_point.getLongitude()));
+                mContext.startActivity(intent);
                 //dest_point = new TMapPoint(search_lat, search_lon);
 
                 //Log.i("dd" + start_point.toString(), dest_point.toString());
                 //start_lat = start_point.getLatitude();
                 //start_lon = start_point.getLongitude();
                 //Log.i("hh: " + Double.toString(start_lon), Double.toString(start_lat));
-                Tmapdata.findPathData(start_point, dest_point, new TMapData.FindPathDataListenerCallback() {
+                //startActivity(new Intent(MainActivity.this, RouteActivity.class));
+                /*Tmapdata.findPathData(start_point, dest_point, new TMapData.FindPathDataListenerCallback() {
                     @Override
                     public void onFindPathData(TMapPolyLine tMapPolyLine) {
                         tmapview.removeAllMarkerItem();
                         tMapPolyLine.setLineColor(Color.BLUE);
                         tMapPolyLine.setLineWidth(10);
+                        tMapPolyLine.setID("path");
                         Ddistance = tMapPolyLine.getDistance();
                         tmapview.addTMapPath(tMapPolyLine);
                         tmapview.setTrackingMode(true);
                     }
-                });
+                });*/
                 //getJsonData(start_point, dest_point);
-                Send_Login_Info(String.valueOf(start_point.getLongitude()), String.valueOf(start_point.getLatitude()), String.valueOf(dest_point.getLongitude()), String.valueOf(dest_point.getLatitude()), "WGS84GEO", "WGS84GEO");
+                //Send_Login_Info(String.valueOf(start_point.getLongitude()), String.valueOf(start_point.getLatitude()), String.valueOf(dest_point.getLongitude()), String.valueOf(dest_point.getLatitude()), "WGS84GEO", "WGS84GEO");
+
                 /*ArrayList<TMapPoint> point = new ArrayList<TMapPoint>();
                 point.add(start_point);
                 point.add(dest_point);
@@ -363,12 +372,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void Send_Login_Info(String _start_x, String _start_y, String _end_x, String _end_y, String _req_coordtype, String _res_coordtype) {
+    /*public void Send_Login_Info(String _start_x, String _start_y, String _end_x, String _end_y, String _req_coordtype, String _res_coordtype) {
         Log.i("psj", "heera : 00001");
         RequestRoad requestlogin = new RequestRoad();
         requestlogin.execute(URI_RECEIVE_USER_ID, _start_x, _start_y, _end_x, _end_y, _req_coordtype, _res_coordtype);
 
-    }
+    }*/
 
     /*public void getJsonData(final TMapPoint start_point, final TMapPoint dest_point) {
         Thread thread = new Thread() {
@@ -486,160 +495,7 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
     }*/
 
-    public class RequestRoad extends AsyncTask<String, Void, String> {
-        protected String doInBackground(String... params) {
-            String uri = params[0];
-            String start_x = params[1];
-            String start_y = params[2];
-            String end_x = params[3];
-            String end_y = params[4];
-            String req_coordtype = params[5];
-            String res_coordtype = params[6];
-            String result = "";
-            String pro = "";
-            String prox = "";
-            String proy = "";
-            String temp = "";
-            String result2 = "";
-            String proo = "";
-            Double dx=0.0;
-            Double dy=0.0;
-            double coorx;
-
-            /*** Add data to send ***/
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-            nameValuePairs.add(new BasicNameValuePair("startX", start_x));
-            nameValuePairs.add(new BasicNameValuePair("startY", start_y));
-            nameValuePairs.add(new BasicNameValuePair("endX", end_x));
-            nameValuePairs.add(new BasicNameValuePair("endY", end_y));
-            nameValuePairs.add(new BasicNameValuePair("reqCoordType", req_coordtype));
-            nameValuePairs.add(new BasicNameValuePair("resCoordType", res_coordtype));
-            StringBuilder builder = new StringBuilder();
-
-            /*** Send post message ***/
-            httppost = new HttpPost(uri);
-            try {
-                UrlEncodedFormEntity urlendoeformentity = new UrlEncodedFormEntity(nameValuePairs, "UTF-8");
-                httppost.setEntity(urlendoeformentity);
-                HttpResponse response = httpclient.execute(httppost);
-                StatusLine statusLine = response.getStatusLine();
-
-                Log.i("ljw",String.valueOf(statusLine.getStatusCode()));
-                if (statusLine.getStatusCode() == 200) {
-                    HttpEntity entity = response.getEntity();
-                    InputStream content = entity.getContent();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-
-                    String line;
-                    int j = 0;
-
-                    while ((line = reader.readLine()) != null) {
-                        Log.i("psj", "server result " + line);
-                        if (j > 0) {
-                            temp = temp + "\n";
-                        }
-                        temp = temp + line;
-                        j++;
-                    }
-                    Log.i("psj", "server result " + temp);
-                    builder.append(temp);
-
-                }
-
-
-            } catch (Exception e) {
-                Log.i("psj", "Exception try1:" + e.getStackTrace());
-                e.printStackTrace();
-            }
-
-             /* -- Treat JSON data to string array  --*/
-            try {
-                JSONObject root = new JSONObject(builder.toString());
-                countriesArray = root.getJSONArray("features");
-                //countries = root.getJSONArray("coordinates");// 자료 갯수
-
-                       /* -- No data --*/
-
-                if (countriesArray.length() < 1) {
-                    return "FALSE";
-                }
-
-
-
-                  /* -- Save data --*/
-                for (int i = 0; i < countriesArray.length(); i++) {
-
-                    JSONObject JObject = countriesArray.getJSONObject(i);
-                    JSONObject JObject2 = countriesArray.getJSONObject(i);
-
-                    result = JObject.getString("geometry");
-                    result2 = JObject2.getString("properties");
-                    proo = JObject2.getJSONObject("properties").getString("description");
-                    pro = JObject.getJSONObject("geometry").getString("type");
-                    prox = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(0);
-                    proy = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(1);
-
-
-                    try{
-                        dx = Double.parseDouble(prox);
-                        dy = Double.parseDouble(proy);
-
-                        addMarker(dy,dx,proo);
-
-                    } catch (NumberFormatException e){
-                    }
-
-
-                    //proo = subJObject.optString("type");
-                    //coorx = ;
-
-
-
-                    //received_user_name[i] = JObject.getString("description");
-                    //received_user_email[i] = JObject.getString("description");
-                    Log.i("whrcp",result);
-                    Log.i("whrcp2",pro);
-                    //Log.i("whrcp3",String.valueOf(dd));
-
-
-                    /*rsiv_message[i] = JObject.getString("message");
-                    rsiv_msg_id[i] = Integer.parseInt(JObject.getString("msg_id"));
-                    rsiv_like_count[i] = Integer.parseInt(JObject.getString("like_count"));
-                    rsiv_like_flag[i] = Boolean.valueOf(JObject.getString("like_flag")).booleanValue();
-                    rsiv_profile_pic[i]    = JObject.getString("profile_pic");
-                    rsiv_uid[i]         = Integer.parseInt(JObject.getString("uid"));
-                    rsiv_pic[i]         = JObject.getString("pic");
-                    rsiv_comment_count[i] = Integer.parseInt(JObject.getString("comment_count"));*/
-
-                    //messageindex++;
-                    //m_arr.add(new Item(rsiv_username[i],rsiv_message[i],rsiv_msg_id[i],rsiv_like_count[i],rsiv_like_flag[i],rsiv_profile_pic[i],rsiv_uid[i],rsiv_pic[i],rsiv_comment_count[i]));
-                }
-
-
-
-
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            //return "true";
-            if(result.equals("1"))
-            {
-                return "TRUE";
-            }
-            else{
-                return "FALSE";
-            }
-
-        }
-
-        protected void onPostExecute(String result) {
-            Log.i("psj", "heera : login 00001 ttt"+result);
-
-        }
-    }
-
-    private void addMarker(double lat, double lng, String title) {
+    /*private void addMarker(double lat, double lng, String title) {
         TMapMarkerItem item = new TMapMarkerItem();
         TMapPoint point = new TMapPoint(lat, lng);
         item.setTMapPoint(point);
@@ -684,32 +540,6 @@ public class MainActivity extends AppCompatActivity {
             moveMap(cacheLocation.getLatitude(), cacheLocation.getLongitude());
             setMyLocation(cacheLocation.getLatitude(), cacheLocation.getLongitude());
         }
-        /*mapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
-            @Override
-            public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
-                String message = null;
-                switch (typeView.getCheckedRadioButtonId()){
-                    case R.id.radio_start:
-                        start = tMapMarkerItem.getTMapPoint();
-                        message = "start";
-                        break;
-                    case R.id.radio_end:
-                        end = tMapMarkerItem.getTMapPoint();
-                        message = "end";
-                        break;
-                }
-                Toast.makeText(MainActivity.this,message + " setting",Toast.LENGTH_SHORT).show();
-            }
-        });*/
-    }
-
-    public void start() {
-        httpclient = new DefaultHttpClient();
-        /***  time out  ***/
-        httpclient.getParams().setParameter("http.protocol.expect-continue", false);
-        httpclient.getParams().setParameter("http.connection.timeout", 10000);
-        httpclient.getParams().setParameter("http.socket.timeout", 10000);
-        Log.i("psj", "heera : 00002");
 
     }
 
@@ -773,7 +603,9 @@ public class MainActivity extends AppCompatActivity {
         public void onProviderDisabled(String s) {
 
         }
-    };
+    };*/
 }
+
+
 
 
