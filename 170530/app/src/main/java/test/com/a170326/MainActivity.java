@@ -342,9 +342,10 @@ public class MainActivity extends AppCompatActivity {
                 Tmapdata.findPathData(start_point, dest_point, new TMapData.FindPathDataListenerCallback() {
                     @Override
                     public void onFindPathData(TMapPolyLine tMapPolyLine) {
-                        //polyLine.setLineColor(Color.BLUE);
-                        //polyLine.setLineWidth(10);
-                        //Ddistance = polyLine.getDistance();
+                        tmapview.removeAllMarkerItem();
+                        tMapPolyLine.setLineColor(Color.BLUE);
+                        tMapPolyLine.setLineWidth(10);
+                        Ddistance = tMapPolyLine.getDistance();
                         tmapview.addTMapPath(tMapPolyLine);
                         tmapview.setTrackingMode(true);
                     }
