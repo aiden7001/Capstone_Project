@@ -66,6 +66,7 @@ class BeaconCondition(threading.Thread):
                 while True:
                         # if parking_mode information is 1
                         if info == 1:
+                                print "info == 1"
                                 time.sleep(3)
                                 if stop_check == l_check:
                                         count = count+1
@@ -80,11 +81,12 @@ class BeaconCondition(threading.Thread):
                                 l_check = stop_check
                         # if parking_mode information is 0
                         else:
+                                print "info == 0"
                                 if transferred_info != "deactivate":
                                        s_1.sendall('{"ctname":"parking_state", "con":"deactivate"}')
                                        transferred_info = "deactivate"
                                        print "deactivate"
-                                       time.sleep(5)
+                                time.sleep(3)
 
 
 #bea[1] = UUID
@@ -170,8 +172,13 @@ class BeaconFinder(threading.Thread):
                                         print "39 beacon"
                                         if f1_distance == 0.0:
                                                 print "39 beacon is connected"
+                                                if transferred_info != "safe":
+                                                        s_1.sendall('{"ctname":"parking_state", "con":"safe"}')
+                                                        transferred_info = "safe"
+                                                        print "safe" 
                                                 f1_distance = distance_1
                                                 f2_distance = 100.0
+                                                
                                         else:
                                                 if abs(distance_1 - f1_distance) > 0.5:
                                                         if beacon_1_lost > 1:
@@ -182,6 +189,10 @@ class BeaconFinder(threading.Thread):
                                                         else:
                                                                 beacon_1_lost = beacon_1_lost + 1
                                                 else:
+                                                        if transferred_info != "safe":
+                                                                s_1.sendall('{"ctname":"parking_state", "con":"safe"}')
+                                                                transferred_info = "safe"
+                                                        print "safe" 
                                                         beacon_1_lost = 0
                                         
                                         # location_data that is data that transferred to parking_location latest.        
@@ -193,6 +204,10 @@ class BeaconFinder(threading.Thread):
                                         print "234 beacon"
                                         if f2_distance == 0.0:
                                                 print "234 beacon is connected"
+                                                if transferred_info != "safe":
+                                                        s_1.sendall('{"ctname":"parking_state", "con":"safe"}')
+                                                        transferred_info = "safe"
+                                                        print "safe" 
                                                 f1_distance = 100.0
                                                 f2_distance = distance_2
                                         else:
@@ -205,6 +220,9 @@ class BeaconFinder(threading.Thread):
                                                         else:
                                                                 beacon_2_lost = beacon_2_lost + 1
                                                 else:
+                                                        if transferred_info != "safe":
+                                                                s_1.sendall('{"ctname":"parking_state", "con":"safe"}')
+                                                                transferred_info = "safe"
                                                         beacon_2_lost = 0
                                         if location_data != 234:
                                                 s_1.sendall('{"ctname":"parking_location", "con":"234"}')
@@ -215,11 +233,6 @@ class BeaconFinder(threading.Thread):
                                 f1_distance = 0.0
                                 f2_distance = 0.0
                                 count_1 = 0
-                                if transferred_info != "deactivate":
-                                        s_1.sendall('{"ctname":"parking_state", "con":"deactivate"}')
-                                        transferred_info = "deactivate"
-                                        print "deactivate"
-
 
                                 
 
