@@ -10,6 +10,7 @@ import picamera
 import MySQLdb as mydb
 
 ## success
+## FOR REGISTERATION
 ## landmark
 ## can check face_size and extract values of specific section
 ## gain values(size) and ratio of each section
