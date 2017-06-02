@@ -1,4 +1,3 @@
-// 서버로 부터 받아온 비콘의 위치정보를 바탕으로 지도위에 표시될 수 있도록 한다.
 package test.com.a170326;
 
 import android.Manifest;
@@ -43,8 +42,8 @@ public class MapsActivity1 extends FragmentActivity implements OnMapReadyCallbac
         bicycle[2] = new LatLng(37.557253, 126.999662);
         bicycle[3] = new LatLng(37.560999, 126.998740);
 
-        int check_location = 39;//Integer.parseInt(FirstActivity.location);
-        //Log.d("mini","location = "+check_location);
+        int check_location = Integer.parseInt(FirstActivity.location);
+        Log.d("mini","location = "+check_location);
 
         if(check_location == 39){
             mMap.addMarker(new MarkerOptions()

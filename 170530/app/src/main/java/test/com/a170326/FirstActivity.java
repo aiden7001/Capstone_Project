@@ -1,6 +1,7 @@
 package test.com.a170326;
 
 import android.app.NotificationManager;
+import android.os.Message;
 import android.support.v7.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,8 +32,10 @@ public class FirstActivity extends AppCompatActivity {
     private Button setting;
     private Button showmap;
     private ToggleButton mode;
+    private TextView state;
 
     static String location;
+    String check_state = "";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +46,8 @@ public class FirstActivity extends AppCompatActivity {
         setting = (Button) findViewById(R.id.setting);
         showmap = (Button) findViewById(R.id.map);
         mode = (ToggleButton) findViewById(R.id.bicyclemode);
+        state = (TextView) findViewById(R.id.showstate);
+
 
         findroute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,18 +59,10 @@ public class FirstActivity extends AppCompatActivity {
         setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
             }
         });
 
         showmap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(FirstActivity.this, MapsActivity1.class));
-            }
-        });
-
-        mode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RetrieveRequest req = new RetrieveRequest("dongguk-capstone", "parking_location");
@@ -80,7 +79,26 @@ public class FirstActivity extends AppCompatActivity {
                 startActivity(new Intent(FirstActivity.this, MapsActivity1.class));
             }
         });
+
+        mode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mode.isChecked()){
+                    Toast.makeText(FirstActivity.this, R.string.parking_off, Toast.LENGTH_SHORT).show();
+                    ControlRequest req = new ControlRequest("dongguk-capstone", "parking_mode", "1");
+                    req.start();
+                    RetrieveRequestCon rew = new RetrieveRequestCon("dongguk-capstone","parking_state");
+                    rew.start();
+                }
+                else{
+                    Toast.makeText(FirstActivity.this, R.string.parking_off, Toast.LENGTH_SHORT).show();
+                    ControlRequest req = new ControlRequest("dongguk-capstone", "parking_mode", "0");
+                    req.start();
+                }
+            }
+        });
     }
+
 
     public void NotificationSomethings(String message) {
         Resources res = getResources();
@@ -112,6 +130,7 @@ public class FirstActivity extends AppCompatActivity {
         void getResponseBody(String msg);
     }
 
+
     // 계속해서 값을 전달받을수 있도록 만든 쓰레드이다.
     class RetrieveRequestCon extends Thread {
 
@@ -123,6 +142,8 @@ public class FirstActivity extends AppCompatActivity {
         private String container_name = ""; //change to your sensing data container name
         int start;
         int finish;
+
+
 
         public RetrieveRequestCon(String aeName, String containerName){
             this.ae_name = aeName;
@@ -163,14 +184,27 @@ public class FirstActivity extends AppCompatActivity {
                     start = strResp.indexOf("<con>");
                     finish = strResp.indexOf("</con>");
                     con = strResp.substring(start + 5, finish);
+                    Log.d("mini","con = "+con);
                     if(mode.isChecked()){
                         if(con.equals("stolen")){
                             NotificationSomethings(con);
+                            check_state = "stolen";
+                            Log.d("mini","stolen");
                             break;
                         }
+                        if(con.equals("safe") && check_state != "safe"){
+                            check_state = "safe";
+                            Log.d("mini","safe");
+                        }
+                        if(con.equals("nobeacon") && check_state != "nobeacon"){
+                            check_state = "nobeacon";
+                            Log.d("mini","nobeacon");
+                        }
                     }
-                    else
+                    else {
+                        Log.d("mini", "con = " + con);
                         break;
+                    }
                     Thread.sleep(1000);
                     conn.disconnect();
                 }
