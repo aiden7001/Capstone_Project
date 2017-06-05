@@ -122,7 +122,7 @@ public class RouteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("mini", "main");
-        setContentView(R.layout.activity_route);
+        setContentView(R.layout.activity_showroute);
 
         start();
 

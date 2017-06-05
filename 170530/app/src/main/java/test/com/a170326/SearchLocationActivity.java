@@ -1,6 +1,8 @@
 package test.com.a170326;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Message;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
+import com.skp.Tmap.TMapMarkerItem;
 import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapView;
@@ -43,6 +46,8 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
     ListView listView = null;
     private GpsInfo start_dot;
     TMapView tmapview;
+    TMapPOIItem item = new TMapPOIItem();
+    ArrayList<TMapPOIItem> POIItem = new ArrayList<TMapPOIItem>();
 
 
     @Override
@@ -211,18 +216,14 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
             public void onClick(View v) {
                 adapter.clearItem();
                 location = input_location.getText().toString();
-
                 Tmapdata.findAllPOI(location, new TMapData.FindAllPOIListenerCallback() {
                     @Override
                     public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
-                        for (int i = 0; i< poiItem.size(); i++){
+                        for (int i = 0; i < poiItem.size(); i++) {
                             TMapPOIItem item = poiItem.get(i);
+                             Log.d("주소로 찾기", "POI Name: " + item.getPOIName().toString() + ", " + "Address: " + item.getPOIAddress().replace("null", "") + ", " + "Point: " + item.getPOIPoint().toString());
 
-                            Log.d("주소로 찾기","POI Name: "+item.getPOIName().toString()+", "+
-                                    "Address: "+item.getPOIAddress().replace("null","")+", "+ "Point: "
-                                    + item.getPOIPoint().toString());
-
-                            adapter.addItem(item.getPOIName(),item.getPOIAddress(),item.getPOIPoint().getLatitude(), item.getPOIPoint().getLongitude());
+                            adapter.addItem(item.getPOIName(), item.getPOIAddress(), item.getPOIPoint().getLatitude(), item.getPOIPoint().getLongitude());
 
                         }
 
@@ -234,8 +235,6 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
                         });
                     }
                 });
-
-
             }
         });
 
