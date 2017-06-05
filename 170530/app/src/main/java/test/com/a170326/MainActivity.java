@@ -64,7 +64,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback{
 
     public static Context mContext = null;
     private boolean m_bTrackingMode = true;
@@ -127,12 +127,12 @@ public class MainActivity extends AppCompatActivity {
      * HTTP CLIENT
      ***/
 
-    /*@Override
+    @Override
     public void onLocationChange(Location location) {
         if (m_bTrackingMode) {
             tmapview.setLocationPoint(location.getLongitude(), location.getLatitude());
         }
-    }*/
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -165,14 +165,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("mini","main");
         setContentView(R.layout.activity_main);
 
         //start();
 
         mContext = this;
 
-        //final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view);
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view);
 
         input_start = (EditText) findViewById(R.id.search_sta);
         input_dest = (EditText) findViewById(R.id.search_dest);
@@ -180,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
         route = (Button) findViewById(R.id.route);
 
         //mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        /*tmapview = (TMapView) findViewById(R.id.map_view);
-        tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
+        tmapview = new TMapView(this);
+        /*tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
             @Override
             public void SKPMapApikeySucceed() {
                 runOnUiThread(new Runnable() {
@@ -196,11 +195,11 @@ public class MainActivity extends AppCompatActivity {
             public void SKPMapApikeyFailed(String s) {
 
             }
-        });
+        });*/
         tmapview.setSKPMapApiKey(mApiKey);
-        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);*/
+        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
 
-        /*tmapview = new TMapView(this);
+        tmapview = new TMapView(this);
         linearLayout.addView(tmapview);
         tmapview.setSKPMapApiKey(mApiKey);
 
@@ -220,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
         tmapgps.OpenGps();
 
         TMapPolyLine polyLine = new TMapPolyLine();
-        polyLine.setLineWidth(3);*/
+        polyLine.setLineWidth(3);
 
         input_start.setOnClickListener(new View.OnClickListener() {
             @Override
