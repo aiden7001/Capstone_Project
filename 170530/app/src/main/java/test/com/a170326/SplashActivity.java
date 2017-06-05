@@ -96,9 +96,10 @@ public class SplashActivity extends AppCompatActivity {
             //ksk_list 에 해당하는 배열을 할당
             JSONArray jArr = json2.getJSONArray("frequentzone");
 
+
+
             //배열의 크기만큼 반복하면서, name과 address의 값을 추출함
             for (int i=0; i<jArr.length(); i++){
-
                 //i번째 배열 할당
                 JSONObject json3 = jArr.getJSONObject(i);
 
@@ -110,7 +111,14 @@ public class SplashActivity extends AppCompatActivity {
                 Log.i("ksno:",taas_lon);
                 Log.i("korname:",taas_lat);
 
+                TaasData taasData = new TaasData(taas_lon, taas_lat);
+                databaseReference.child("TAAS").child(String.valueOf(count)).setValue(taasData);
+                count++;
+
             }
+
+
+
 
         } catch (Exception e) {
             e.printStackTrace();

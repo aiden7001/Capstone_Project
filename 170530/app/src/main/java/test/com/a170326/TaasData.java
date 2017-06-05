@@ -13,9 +13,9 @@ public class TaasData {
 
     }
 
-    public TaasData(String taas_lat, String taas_lon){
-        this.taas_lat = taas_lat;
+    public TaasData(String taas_lon, String taas_lat){
         this.taas_lon = taas_lon;
+        this.taas_lat = taas_lat;
     }
 }
 

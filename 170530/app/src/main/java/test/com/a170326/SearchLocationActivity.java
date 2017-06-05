@@ -41,6 +41,8 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
     String start_lon;
     Intent intent_return;
     ListView listView = null;
+
+
     private GpsInfo start_dot;
     TMapView tmapview;
 
@@ -113,20 +115,23 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
                 if (start_dot.isGetLocation()) {
                     start_lat = Double.toString(start_dot.getLatitude());
                     start_lon = Double.toString(start_dot.getLongitude());
-                    Log.i("eee:" + start_lat, start_lon);
+
 
                     if (start_lat != "0.0" || start_lon != "0.0") {
+
                         Tmapdata.convertGpsToAddress(start_dot.getLatitude(), start_dot.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
                             @Override
                             public void onConvertToGPSToAddress(String s) {
                                 address = s;
+                                Log.i("eee:" + start_lat, start_lon);
+                                Toast.makeText(SearchLocationActivity.this, "뭐야", Toast.LENGTH_SHORT).show();
 
                             }
-
                         });
 
                     }
                     if (address != null) {
+                        Log.i("eee:" + start_lat, start_lon);
                         intent_return = new Intent();
                         intent_return.putExtra("input", address);
                         Toast.makeText(SearchLocationActivity.this, address, Toast.LENGTH_SHORT).show();

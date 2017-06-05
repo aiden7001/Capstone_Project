@@ -136,8 +136,8 @@ public class RouteActivity extends AppCompatActivity {
         //route = (Button) findViewById(R.id.route);
 
         mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        tmapview = (TMapView) findViewById(R.id.map_view);
-        tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
+        tmapview = (TMapView) findViewById(R.id.map_view2);
+        /*tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
             @Override
             public void SKPMapApikeySucceed() {
                 runOnUiThread(new Runnable() {
@@ -152,14 +152,14 @@ public class RouteActivity extends AppCompatActivity {
             public void SKPMapApikeyFailed(String s) {
 
             }
-        });
+        });*/
         tmapview.setSKPMapApiKey(mApiKey);
         tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
 
 
         //Log.i("hhr", String.valueOf(tmapview.getLatitude()));
 
-
+        showRoute();
 
         /*route.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,7 +207,7 @@ public class RouteActivity extends AppCompatActivity {
 
     public void Send_Login_Info(String _start_x, String _start_y, String _end_x, String _end_y, String _req_coordtype, String _res_coordtype) {
         Log.i("psj", "heera : 00001");
-        RouteActivity.RequestRoad requestlogin = new RequestRoad();
+        RequestRoad requestlogin = new RequestRoad();
         requestlogin.execute(URI_RECEIVE_USER_ID, _start_x, _start_y, _end_x, _end_y, _req_coordtype, _res_coordtype);
 
     }
