@@ -16,7 +16,7 @@ stop_check = 0.0
 transferred_info = ""
 
 
-HOST = '192.168.1.2'
+HOST = '192.168.43.76'
 PORT = 7622
 
 
