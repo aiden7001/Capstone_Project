@@ -88,10 +88,10 @@ public class RouteActivity extends AppCompatActivity {
     private EditText input_dest;
     TMapPoint start_point = null;
     TMapPoint dest_point = null;
-    Double dest_lat = null;
-    Double dest_lon = null;
-    Double start_lat = null;
-    Double start_lon = null;
+    String dest_lat;
+    String dest_lon;
+    String start_lat;
+    String start_lon;
 
 
     TMapAddressInfo addressInfoSave = new TMapAddressInfo();
@@ -183,12 +183,12 @@ public class RouteActivity extends AppCompatActivity {
         //Ddistance = tMapPolyLine.getDistance();
         //tmapview.addTMapPath(polyline);
         //tmapview.setTrackingMode(true);
-        double start_lat= intent.getExtras().getDouble("start_lat");
-        double start_lon= intent.getExtras().getDouble("start_lon");
-        double dest_lat= intent.getExtras().getDouble("dest_lat");
-        double dest_lon= intent.getExtras().getDouble("dest_lon");
-        start_point = new TMapPoint(start_lat,start_lon);
-        dest_point = new TMapPoint(dest_lat,dest_lon);
+        start_lat= intent.getExtras().getString("start_lat");
+        start_lon= intent.getExtras().getString("start_lon");
+        dest_lat= intent.getExtras().getString("dest_lat");
+        dest_lon= intent.getExtras().getString("dest_lon");
+        start_point = new TMapPoint(Double.parseDouble(start_lat),Double.parseDouble(start_lon));
+        dest_point = new TMapPoint(Double.parseDouble(dest_lat),Double.parseDouble(dest_lon));
 
         Tmapdata.findPathData(start_point, dest_point, new TMapData.FindPathDataListenerCallback() {
             @Override

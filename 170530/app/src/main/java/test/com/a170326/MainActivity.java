@@ -207,7 +207,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tmapview.setIconVisibility(true);
         tmapview.setZoomLevel(15);
         tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
-        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
         tmapview.setTrackingMode(true);
         tmapview.setSightVisible(true);
 
@@ -338,10 +337,10 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, RouteActivity.class);
-                intent.putExtra("start_lat",Double.toString(start_point.getLatitude()));
-                intent.putExtra("start_lon",Double.toString(start_point.getLongitude()));
-                intent.putExtra("dest_lat",Double.toString(dest_point.getLatitude()));
-                intent.putExtra("dest_lon",Double.toString(dest_point.getLongitude()));
+                intent.putExtra("start_lat",String.valueOf(start_point.getLatitude()));
+                intent.putExtra("start_lon",String.valueOf(start_point.getLongitude()));
+                intent.putExtra("dest_lat",String.valueOf(dest_point.getLatitude()));
+                intent.putExtra("dest_lon",String.valueOf(dest_point.getLongitude()));
                 mContext.startActivity(intent);
                 //dest_point = new TMapPoint(search_lat, search_lon);
 
