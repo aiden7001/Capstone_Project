@@ -113,11 +113,12 @@ BetweenEye_Face_ratio = round(float(Eye_between)/float(Face_width),2)
 Nose_Face_ratio = round(float(Nose_width)/float(Face_width),2)
 LeftEye_to_Face_ratio = round(float(Eye_to_Face_Left)/float(Face_width),2)
 RightEye_to_Face_ratio = round(float(Eye_to_Face_Right)/float(Face_width),2)
+sum_ratio = Face_ratio + LeftEye_Face_ratio + RightEye_Face_ratio + BetweenEye_Face_ratio + Nose_Face_ratio + LeftEye_to_Face_ratio + RightEye_to_Face_ratio
 
 
 #DB
-sql = "insert into check_person (id,face,lefteye_face,righteye_face,betweeneye_face,nose_face,lefteye_to_face,righteye_to_face) values(%s,%s,%s,%s,%s,%s,%s,%s)"
-cur.execute(sql,(str_array,Face_ratio,LeftEye_Face_ratio,RightEye_Face_ratio,BetweenEye_Face_ratio,Nose_Face_ratio,LeftEye_to_Face_ratio,RightEye_to_Face_ratio))
+sql = "insert into registration_table (id,face,lefteye_face,righteye_face,betweeneye_face,nose_face,lefteye_to_face,righteye_to_face, sum_ratio) values(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+cur.execute(sql,(str_array,Face_ratio,LeftEye_Face_ratio,RightEye_Face_ratio,BetweenEye_Face_ratio,Nose_Face_ratio,LeftEye_to_Face_ratio,RightEye_to_Face_ratio,sum_ratio))
 conn.commit()
 print "upload successfully"
 
