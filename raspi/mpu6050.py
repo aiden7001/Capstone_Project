@@ -95,7 +95,7 @@ l_xout = gyro_xout;
 # Now wake the 6050 up as it starts in sleep mode
 try:
     while(1):
-        time.sleep(0.3)
+        time.sleep(0.1)
 
         bus.write_byte_data(address, power_mgmt_1, 0)
 
@@ -111,18 +111,18 @@ try:
 
         print "gyro_xout: ", gyro_xout, " scaled: ", (gyro_xout / 131)
 
-        print "gyro_yout: ", gyro_yout, " scaled: ", (gyro_yout / 131)
+        #print "gyro_yout: ", gyro_yout, " scaled: ", (gyro_yout / 131)
 
-        print "gyro_zout: ", gyro_zout, " scaled: ", (gyro_zout / 131)
+        #print "gyro_zout: ", gyro_zout, " scaled: ", (gyro_zout / 131)
          
         print
 
         n_xout = gyro_xout
-        if(abs(n_xout) - abs(l_xout)) > 650):
+        if((n_xout - l_xout) > 1200):
             gpio.output(18,True)
-            print "l_out = ", l_xout
-            print "n_out = ", n_xout
-            print "abs = ", abs(n_xout - l_xout)
+            #print "l_out = ", l_xout
+            #print "n_out = ", n_xout
+            #print "abs = ", abs(n_xout - l_xout)
         else:
             gpio.output(18,False)
 
