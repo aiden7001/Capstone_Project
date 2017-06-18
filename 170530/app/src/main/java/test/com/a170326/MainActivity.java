@@ -117,11 +117,11 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     /***
      * HTTP CLIENT
      ***/
-    public String URI_RECEIVE_USER_ID = "https://apis.skplanetx.com/tmap/routes?callback=&version=1&format=json&appKey=" + mApiKey;
+    /*public String URI_RECEIVE_USER_ID = "https://apis.skplanetx.com/tmap/routes?callback=&version=1&format=json&appKey=" + mApiKey;
     public static HttpClient httpclient;
     HttpPost httppost;
     private JSONArray countriesArray;
-    private JSONArray countries;
+    private JSONArray countries;*/
 
     /***
      * HTTP CLIENT
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        start();
+        //start();
 
         mContext = this;
 
@@ -337,10 +337,16 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, RouteActivity.class);
+
+                intent.putExtra("start_address",String.valueOf(input_start.getText()));
+                Log.d("mini2", String.valueOf(input_start));
+                intent.putExtra("dest_address", String.valueOf(input_dest.getText()));
+                Log.d("mini2", String.valueOf(input_dest));
                 intent.putExtra("start_lat",String.valueOf(start_point.getLatitude()));
                 intent.putExtra("start_lon",String.valueOf(start_point.getLongitude()));
                 intent.putExtra("dest_lat",String.valueOf(dest_point.getLatitude()));
                 intent.putExtra("dest_lon",String.valueOf(dest_point.getLongitude()));
+
                 mContext.startActivity(intent);
                 //dest_point = new TMapPoint(search_lat, search_lon);
 
@@ -375,157 +381,12 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     }
 
-    public void Send_Login_Info(String _start_x, String _start_y, String _end_x, String _end_y, String _req_coordtype, String _res_coordtype) {
+    /*public void Send_Login_Info(String _start_x, String _start_y, String _end_x, String _end_y, String _req_coordtype, String _res_coordtype) {
         Log.i("psj", "heera : 00001");
         RequestRoad requestlogin = new RequestRoad();
         requestlogin.execute(URI_RECEIVE_USER_ID, _start_x, _start_y, _end_x, _end_y, _req_coordtype, _res_coordtype);
 
-    }
-
-    public class RequestRoad extends AsyncTask<String, Void, String> {
-        protected String doInBackground(String... params) {
-            String uri = params[0];
-            String start_x = params[1];
-            String start_y = params[2];
-            String end_x = params[3];
-            String end_y = params[4];
-            String req_coordtype = params[5];
-            String res_coordtype = params[6];
-            String result = "";
-            String pro = "";
-            String prox = "";
-            String proy = "";
-            String temp = "";
-            String result2 = "";
-            String proo = "";
-            Double dx=0.0;
-            Double dy=0.0;
-            double coorx;
-
-            /*** Add data to send ***/
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-            nameValuePairs.add(new BasicNameValuePair("startX", start_x));
-            nameValuePairs.add(new BasicNameValuePair("startY", start_y));
-            nameValuePairs.add(new BasicNameValuePair("endX", end_x));
-            nameValuePairs.add(new BasicNameValuePair("endY", end_y));
-            nameValuePairs.add(new BasicNameValuePair("reqCoordType", req_coordtype));
-            nameValuePairs.add(new BasicNameValuePair("resCoordType", res_coordtype));
-            StringBuilder builder = new StringBuilder();
-
-            /*** Send post message ***/
-            httppost = new HttpPost(uri);
-            try {
-                UrlEncodedFormEntity urlendoeformentity = new UrlEncodedFormEntity(nameValuePairs, "UTF-8");
-                httppost.setEntity(urlendoeformentity);
-                HttpResponse response = httpclient.execute(httppost);
-                StatusLine statusLine = response.getStatusLine();
-
-                Log.i("ljw",String.valueOf(statusLine.getStatusCode()));
-                if (statusLine.getStatusCode() == 200) {
-                    HttpEntity entity = response.getEntity();
-                    InputStream content = entity.getContent();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-
-                    String line;
-                    int j = 0;
-
-                    while ((line = reader.readLine()) != null) {
-                        Log.i("psj", "server result " + line);
-                        if (j > 0) {
-                            temp = temp + "\n";
-                        }
-                        temp = temp + line;
-                        j++;
-                    }
-                    Log.i("psj", "server result " + temp);
-                    builder.append(temp);
-
-                }
-
-
-            } catch (Exception e) {
-                Log.i("psj", "Exception try1:" + e.getStackTrace());
-                e.printStackTrace();
-            }
-
-             /* -- Treat JSON data to string array  --*/
-            try {
-                JSONObject root = new JSONObject(builder.toString());
-                countriesArray = root.getJSONArray("features");
-                //countries = root.getJSONArray("coordinates");// 자료 갯수
-
-                       /* -- No data --*/
-
-                if (countriesArray.length() < 1) {
-                    return "FALSE";
-                }
-
-
-
-                  /* -- Save data --*/
-                for (int i = 0; i < countriesArray.length(); i++) {
-
-                    JSONObject JObject = countriesArray.getJSONObject(i);
-                    JSONObject JObject2 = countriesArray.getJSONObject(i);
-
-                    result = JObject.getString("geometry");
-                    result2 = JObject2.getString("properties");
-                    proo = JObject2.getJSONObject("properties").getString("description");
-                    pro = JObject.getJSONObject("geometry").getString("type");
-                    prox = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(0);
-                    proy = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(1);
-
-
-                    try{
-                        dx = Double.parseDouble(prox);
-                        dy = Double.parseDouble(proy);
-
-                        //addMarker(dy,dx,proo);
-
-                    } catch (NumberFormatException e){
-                    }
-
-
-                    //proo = subJObject.optString("type");
-                    //coorx = ;
-
-
-                    Log.i("whrcp",result);
-                    Log.i("whrcp2",pro);
-
-                }
-
-
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            //return "true";
-            if(result.equals("1"))
-            {
-                return "TRUE";
-            }
-            else{
-                return "FALSE";
-            }
-
-        }
-
-        protected void onPostExecute(String result) {
-            Log.i("psj", "heera : login 00001 ttt"+result);
-
-        }
-    }
-
-    public void start() {
-        httpclient = new DefaultHttpClient();
-        /***  time out  ***/
-        httpclient.getParams().setParameter("http.protocol.expect-continue", false);
-        httpclient.getParams().setParameter("http.connection.timeout", 10000);
-        httpclient.getParams().setParameter("http.socket.timeout", 10000);
-        Log.i("psj", "heera : 00002");
-
-    }
+    }*/
 
     /*public void getJsonData(final TMapPoint start_point, final TMapPoint dest_point) {
         Thread thread = new Thread() {

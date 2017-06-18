@@ -97,8 +97,9 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
     private GpsInfo gps;
 
-    private EditText input_start;
-    private EditText input_dest;
+    String input_start;
+    String input_dest;
+    private TextView routename;
     TMapPoint start_point = null;
     TMapPoint dest_point = null;
     String dest_lat;
@@ -107,13 +108,17 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     String start_lon;
     String mdes;
     int mturn;
+    String start_add;
+    String dest_add;
+
 
 
     TMapAddressInfo addressInfoSave = new TMapAddressInfo();
 
+
     ArrayList<String> saveDescription = new ArrayList<String>();
     ArrayList<String> saveTurn = new ArrayList<String>();
-    ArrayList<TMapPoint> saveRoutePoint = new ArrayList<TMapPoint>();
+    ArrayList<MapPoint> saveRoutePoint = new ArrayList<MapPoint>();
     ArrayList<TMapPoint> saveRouteTurnPoint = new ArrayList<TMapPoint>();
     ArrayList<Integer> saveRouteTurn = new ArrayList<Integer>();
     //private ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
@@ -146,14 +151,33 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("mini", "main");
-        setContentView(R.layout.activity_route);
+
         listView = (ListView)findViewById(R.id.navilist);
+
+        setContentView(R.layout.activity_showroute);
+
 
         start();
 
         handle = (Button) findViewById(R.id.handle);
 
         mContext = this;
+        Intent intent = getIntent();
+        start_lat= intent.getExtras().getString("start_lat");
+        start_lon= intent.getExtras().getString("start_lon");
+        dest_lat= intent.getExtras().getString("dest_lat");
+        dest_lon= intent.getExtras().getString("dest_lon");
+        start_point = new TMapPoint(Double.parseDouble(start_lat),Double.parseDouble(start_lon));
+        dest_point = new TMapPoint(Double.parseDouble(dest_lat),Double.parseDouble(dest_lon));
+
+        routename = (TextView) findViewById(R.id.routeshow);
+
+        start_add = intent.getExtras().getString("start_address");
+        Log.d("mini",start_add);
+        dest_add = intent.getExtras().getString("dest_address");
+        Log.d("mini",dest_add);
+
+        routename.setText(start_add+"->"+dest_add);
 
         //final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view);
 
@@ -223,7 +247,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     }
 
     public void showRoute(){
-        Intent intent = getIntent();
+        //Intent intent = getIntent();
         //String id = intent.getExtras().getString("routename");
         //TMapPolyLine polyline = tmapview.getPolyLineFromID(id);
         //tmapview.removeAllMarkerItem();
@@ -233,12 +257,6 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         //Ddistance = tMapPolyLine.getDistance();
         //tmapview.addTMapPath(polyline);
         //tmapview.setTrackingMode(true);
-        start_lat= intent.getExtras().getString("start_lat");
-        start_lon= intent.getExtras().getString("start_lon");
-        dest_lat= intent.getExtras().getString("dest_lat");
-        dest_lon= intent.getExtras().getString("dest_lon");
-        start_point = new TMapPoint(Double.parseDouble(start_lat),Double.parseDouble(start_lon));
-        dest_point = new TMapPoint(Double.parseDouble(dest_lat),Double.parseDouble(dest_lon));
 
         Tmapdata.findPathData(start_point, dest_point, new TMapData.FindPathDataListenerCallback() {
             @Override
@@ -365,7 +383,9 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                         dx = Double.parseDouble(prox);
                         dy = Double.parseDouble(proy);
 
+                        //saveRoutePoint.add(new TMapPoint(dy,dx));
                         addMarker(dy,dx,proo);
+                        showMarker();
 
                     } catch (NumberFormatException e){
                     }
@@ -438,8 +458,11 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     }
 
     private void addMarker(double lat, double lng, String title) {
-        TMapMarkerItem item = new TMapMarkerItem();
+        saveRoutePoint.add(new MapPoint(title,lat,lng));
+        /*TMapMarkerItem item = new TMapMarkerItem();
         TMapPoint point = new TMapPoint(lat, lng);
+
+        //Log.d("mini", String.valueOf(saveRoutePoint.get(1)));
         item.setTMapPoint(point);
         //Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_add_marker);
         //item.setIcon(bitmap);
@@ -452,7 +475,26 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         //item.setCalloutRightButtonImage(right);
         item.setCanShowCallout(true);
         tmapview.addMarkerItem("m" + id, item);
-        id++;
+        id++;*/
+    }
+
+    public void showMarker() {
+        for(int i=0;i<saveRoutePoint.size();i++){
+            TMapPoint point = new TMapPoint(saveRoutePoint.get(i).getLatitude(),saveRoutePoint.get(i).getLongitude());
+            Log.d("mini", String.valueOf(saveRoutePoint.get(i).getLatitude()));
+            Log.d("mini", String.valueOf(saveRoutePoint.get(i).getLongitude()));
+            Log.d("mini", String.valueOf(saveRoutePoint.get(i)));
+            TMapMarkerItem item1 = new TMapMarkerItem();
+            Bitmap bitmap = null;
+            item1.setTMapPoint(point);
+            //item1.setName(saveRoutePoint.get(i).getName());
+            item1.setVisible(item1.VISIBLE);
+            item1.setCalloutTitle(saveRoutePoint.get(i).getName());
+            item1.setCanShowCallout(true);
+            tmapview.addMarkerItem("m" + id, item1);
+            id++;
+
+        }
     }
 
     int id = 0;
@@ -557,6 +599,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         }
     };
 
+
     public void saveArray(int turn, String navidesc){
         mdes = navidesc;
         mturn = turn;
@@ -567,3 +610,5 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
 
 }
+
+
