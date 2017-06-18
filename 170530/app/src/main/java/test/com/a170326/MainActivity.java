@@ -362,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                     }
                 });*/
                 //getJsonData(start_point, dest_point);
-                Send_Login_Info(String.valueOf(start_point.getLongitude()), String.valueOf(start_point.getLatitude()), String.valueOf(dest_point.getLongitude()), String.valueOf(dest_point.getLatitude()), "WGS84GEO", "WGS84GEO");
+                //Send_Login_Info(String.valueOf(start_point.getLongitude()), String.valueOf(start_point.getLatitude()), String.valueOf(dest_point.getLongitude()), String.valueOf(dest_point.getLatitude()), "WGS84GEO", "WGS84GEO");
 
                 /*ArrayList<TMapPoint> point = new ArrayList<TMapPoint>();
                 point.add(start_point);
