@@ -8,24 +8,34 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.database.Transaction;
 import com.skp.Tmap.TMapAddressInfo;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
@@ -63,8 +73,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.LogRecord;
 
-public class RouteActivity extends AppCompatActivity {
+public class RouteActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback{
 
     public static Context mContext = null;
     private boolean m_bTrackingMode = true;
@@ -81,6 +92,9 @@ public class RouteActivity extends AppCompatActivity {
     private Button search;
     private Button route;
     private Button btnShowLocation;
+    private Button guide;
+    private Button handle;
+    ListView listView;
 
     private GpsInfo gps;
 
@@ -93,6 +107,8 @@ public class RouteActivity extends AppCompatActivity {
     String dest_lon;
     String start_lat;
     String start_lon;
+    String mdes;
+    int mturn;
     String start_add;
     String dest_add;
 
@@ -100,6 +116,9 @@ public class RouteActivity extends AppCompatActivity {
 
     TMapAddressInfo addressInfoSave = new TMapAddressInfo();
 
+
+    ArrayList<String> saveDescription = new ArrayList<String>();
+    ArrayList<String> saveTurn = new ArrayList<String>();
     ArrayList<MapPoint> saveRoutePoint = new ArrayList<MapPoint>();
     ArrayList<TMapPoint> saveRouteTurnPoint = new ArrayList<TMapPoint>();
     ArrayList<Integer> saveRouteTurn = new ArrayList<Integer>();
@@ -123,12 +142,25 @@ public class RouteActivity extends AppCompatActivity {
     private JSONArray countries;
 
     @Override
+    public void onLocationChange(Location location) {
+        if (m_bTrackingMode) {
+            tmapview.setLocationPoint(location.getLongitude(), location.getLatitude());
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("mini", "main");
+
+        listView = (ListView)findViewById(R.id.navilist);
+
         setContentView(R.layout.activity_showroute);
 
+
         start();
+
+        handle = (Button) findViewById(R.id.handle);
 
         mContext = this;
         Intent intent = getIntent();
@@ -175,11 +207,34 @@ public class RouteActivity extends AppCompatActivity {
         });*/
         tmapview.setSKPMapApiKey(mApiKey);
         tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
+        tmapview.setCompassMode(true);
+        tmapview.setIconVisibility(true);
+        tmapview.setZoomLevel(15);
+        tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
+        tmapview.setTrackingMode(true);
+        tmapview.setSightVisible(true);
+
+        tmapgps = new TMapGpsManager(RouteActivity.this);
+        tmapgps.setMinTime(1000);
+        tmapgps.setMinDistance(5);
+        tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
+        //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
+        tmapgps.OpenGps();
 
 
         //Log.i("hhr", String.valueOf(tmapview.getLatitude()));
 
         showRoute();
+
+        /*final Handler handler = new Handler(Looper.getMainLooper()){
+            public void handleMessage(Message msg){
+                setnavilist();
+            }
+        };*/
+
+
+        //Log.i("tkdlwm:",String.valueOf(size));
+        //Log.i("ghkrdls:",saveDescription.get(0));
 
         /*route.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,7 +271,9 @@ public class RouteActivity extends AppCompatActivity {
                 tmapview.setTrackingMode(true);
             }
         });
+
         Send_Login_Info(String.valueOf(start_point.getLongitude()), String.valueOf(start_point.getLatitude()), String.valueOf(dest_point.getLongitude()), String.valueOf(dest_point.getLatitude()), "WGS84GEO", "WGS84GEO");
+
     }
 
     public void Send_Login_Info(String _start_x, String _start_y, String _end_x, String _end_y, String _req_coordtype, String _res_coordtype) {
@@ -237,14 +294,16 @@ public class RouteActivity extends AppCompatActivity {
             String res_coordtype = params[6];
             String result = "";
             String pro = "";
+            String proo = "";
+            int turn ;
             String prox = "";
             String proy = "";
             String temp = "";
             String result2 = "";
-            String proo = "";
             Double dx=0.0;
             Double dy=0.0;
             double coorx;
+
 
             /*** Add data to send ***/
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
@@ -264,7 +323,6 @@ public class RouteActivity extends AppCompatActivity {
                 HttpResponse response = httpclient.execute(httppost);
                 StatusLine statusLine = response.getStatusLine();
 
-                Log.i("ljw",String.valueOf(statusLine.getStatusCode()));
                 if (statusLine.getStatusCode() == 200) {
                     HttpEntity entity = response.getEntity();
                     InputStream content = entity.getContent();
@@ -304,20 +362,22 @@ public class RouteActivity extends AppCompatActivity {
                     return "FALSE";
                 }
 
-
-
                   /* -- Save data --*/
                 for (int i = 0; i < countriesArray.length(); i++) {
 
+
                     JSONObject JObject = countriesArray.getJSONObject(i);
-                    JSONObject JObject2 = countriesArray.getJSONObject(i);
 
                     result = JObject.getString("geometry");
-                    result2 = JObject2.getString("properties");
-                    proo = JObject2.getJSONObject("properties").getString("description");
+                    result2 = JObject.getString("properties");
+                    proo = JObject.getJSONObject("properties").getString("description");
                     pro = JObject.getJSONObject("geometry").getString("type");
                     prox = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(0);
                     proy = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(1);
+
+
+                    Log.i("gmlfk:",proo);
+
 
 
                     try{
@@ -331,13 +391,21 @@ public class RouteActivity extends AppCompatActivity {
                     } catch (NumberFormatException e){
                     }
 
+                    if(pro.equals("Point")){
+                        turn = JObject.getJSONObject("properties").getInt("turnType");
+                        String navidesc = JObject.getJSONObject("properties").getString("description");
+                        Log.i("ghkrdls:",String.valueOf(turn));
+
+                        saveArray(turn, navidesc);
+
+                    }
+
 
                     //proo = subJObject.optString("type");
                     //coorx = ;
 
-
-                    Log.i("whrcp",result);
-                    Log.i("whrcp2",pro);
+                    //Log.i("whrcp3:",String.valueOf(i)+proo);
+                    //Log.i("whrcp3:",String.valueOf(i)+turn);
 
                 }
 
@@ -358,7 +426,34 @@ public class RouteActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String result) {
-            Log.i("psj", "heera : login 00001 ttt"+result);
+            //Log.i("psj", "heera : login 00001 ttt"+result);
+
+            NaviListViewAdapter adapter;
+
+            adapter = new NaviListViewAdapter();
+
+            listView = (ListView)findViewById(R.id.navilist);
+            listView.setAdapter(adapter);
+            adapter.clearItem();
+
+            for(int i=0; i<saveTurn.size(); i++){
+                Log.i("anjdi:","10");
+                if (saveTurn.get(i).equals(11)){
+                    adapter.addItem(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.upward), saveDescription.get(i));
+                    Log.i("anjdi:","11");
+                }
+                else if(saveTurn.get(i).equals(12)){
+                    adapter.addItem(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.back), saveDescription.get(i));
+                    Log.i("anjdi:","12");
+                }
+                else {
+                    adapter.addItem(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.forward), saveDescription.get(i));
+                    Log.i("anjdi:","13");
+                }
+
+            }
+
+
 
         }
     }
@@ -505,4 +600,16 @@ public class RouteActivity extends AppCompatActivity {
         }
     };
 
+
+    public void saveArray(int turn, String navidesc){
+        mdes = navidesc;
+        mturn = turn;
+        saveTurn.add(String.valueOf(mturn));
+        saveDescription.add(mdes);
+    }
+
+
+
 }
+
+
