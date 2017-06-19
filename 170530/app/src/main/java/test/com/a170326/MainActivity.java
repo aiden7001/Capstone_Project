@@ -64,7 +64,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback{
+public class MainActivity extends AppCompatActivity {
 
     public static Context mContext = null;
     private boolean m_bTrackingMode = true;
@@ -127,12 +127,12 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
      * HTTP CLIENT
      ***/
 
-    @Override
+    /*@Override
     public void onLocationChange(Location location) {
         if (m_bTrackingMode) {
             tmapview.setLocationPoint(location.getLongitude(), location.getLatitude());
         }
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //start();
+        onStart();
 
         mContext = this;
 
@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         search = (Button) findViewById(R.id.search_button);
         route = (Button) findViewById(R.id.route);
 
-        //mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         tmapview = new TMapView(this);
         /*tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
             @Override
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tmapview.setSKPMapApiKey(mApiKey);
         tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
 
-        tmapview = new TMapView(this);
+        /*tmapview = new TMapView(this);
         linearLayout.addView(tmapview);
         tmapview.setSKPMapApiKey(mApiKey);
 
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tmapgps.setMinDistance(5);
         tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
         //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
-        tmapgps.OpenGps();
+        tmapgps.OpenGps();*/
 
         TMapPolyLine polyLine = new TMapPolyLine();
         polyLine.setLineWidth(3);
@@ -613,6 +613,69 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         }
     };*/
+    boolean isInitialized = false;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Location location = mLM.getLastKnownLocation(mProvider);
+        if (location != null) {
+            mListener.onLocationChanged(location);
+        }
+        mLM.requestSingleUpdate(mProvider, mListener, null);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mLM.removeUpdates(mListener);
+    }
+
+    Location cacheLocation = null;
+
+    private void moveMap(double lat, double lng) {
+        tmapview.setCenterPoint(lng, lat);
+    }
+
+    private void setMyLocation(double lat, double lng) {
+        //Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_place);
+        //tmapview.setIcon(bitmap);
+        tmapview.setLocationPoint(lng, lat);
+        tmapview.setIconVisibility(true);
+    }
+
+    LocationListener mListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            if (isInitialized) {
+                moveMap(location.getLatitude(), location.getLongitude());
+                setMyLocation(location.getLatitude(), location.getLongitude());
+            } else {
+                cacheLocation = location;
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
 }
 
 
