@@ -565,7 +565,6 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         }
 
     }*/
-
     public void start() {
         httpclient = new DefaultHttpClient();
         /***  time out  ***/
@@ -575,6 +574,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         Log.i("psj", "heera : 00002");
 
     }
+
 
     @Override
     protected void onStart() {
