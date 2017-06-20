@@ -3,6 +3,7 @@ package test.com.a170326;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.skp.Tmap.TMapGpsManager;
 import com.skp.Tmap.TMapPoint;
@@ -28,6 +30,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 import org.xml.sax.helpers.LocatorImpl;
 
 import java.io.BufferedReader;
@@ -43,8 +46,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static test.com.a170326.RouteActivity.httpclient;
 
@@ -77,12 +83,16 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private TextView showtime;
     private TextView showdistance;
     private TextToSpeech myTTS;
+    private TextView currenttime;
+    private TextView currentspeed;
 
     Double time;
     Double distance;
     int hour,minute;
     int km,m;
     Double speed;
+    double myspeed;
+    long now = System.currentTimeMillis();
 
     @Override
     public void onLocationChange(Location location) {
@@ -97,6 +107,9 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         setContentView(R.layout.activity_navi);
 
         myTTS = new TextToSpeech(this, this);
+        Date date = new Date(now);
+        SimpleDateFormat sdfNow = new SimpleDateFormat("HH:mm:ss", Locale.KOREA);
+        String formatDate = sdfNow.format(date);
 
         tmapgps = new TMapGpsManager(NaviActivity.this);
         tmapgps.setMinTime(1000);
@@ -124,10 +137,14 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         minute = (int)(Math.round(time)%3600.0/60.0);
         km = (int)(Math.round(distance)/1000.0);
         m = (int)(Math.round(distance)%1000.0/100.0);
+        myspeed = 0;
+        //Toast.makeText(NaviActivity.this, (int) myspeed,Toast.LENGTH_LONG).show();
 
         dest_info = (TextView) findViewById(R.id.dest_info);
         showtime = (TextView) findViewById(R.id.totaltime);
         showdistance = (TextView) findViewById(R.id.totaldistance);
+        currenttime = (TextView) findViewById(R.id.time);
+        currentspeed = (TextView) findViewById(R.id.velocity);
 
         Log.i("whkvy1",dest_lat);
         Log.i("whkvy2",dest_lon);
@@ -139,6 +156,8 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         showtime.setText(Double.toString(time));
         showdistance.setText(Double.toString(hour));
+        currenttime.setText(formatDate);
+        //currentspeed.setText((int) myspeed);
         Log.d("minig", String.valueOf(hour));
         Log.d("minig", String.valueOf(minute));
         Log.d("minig", String.valueOf(km));

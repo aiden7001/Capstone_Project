@@ -84,7 +84,6 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     private TMapData Tmapdata = new TMapData();
     TMapView tmapview = null;
     LocationManager mLM;
-    public static double Ddistance;
     String Distance;
     String mProvider = LocationManager.NETWORK_PROVIDER;
     private static String mApiKey = "759b5f01-999a-3cb1-a9ed-f05e2f121476";
@@ -111,8 +110,8 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     int mturn;
     String start_add;
     String dest_add;
-    Double ttime;
-    Double tdistance;
+
+    Double Ddistance;
 
     Intent intentTonavi;
 
@@ -203,8 +202,8 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                 //Log.d("mini2", String.valueOf(input_dest));
                 intentTonavi.putExtra("dest_lat",dest_lat);
                 intentTonavi.putExtra("dest_lon",dest_lon);
-                intentTonavi.putExtra("totalDistance",tdistance);
-                intentTonavi.putExtra("totalTime",ttime);
+                intentTonavi.putExtra("totalDistance",Ddistance);
+                //intentTonavi.putExtra("totalTime",ttime);
                 //intent.putExtra("dest_lat",String.valueOf(dest_point.getLatitude()));
                 //intent.putExtra("dest_lon",String.valueOf(dest_point.getLongitude()));
 
@@ -416,15 +415,15 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                         //saveRoutePoint.add(new TMapPoint(dy,dx));
                         addMarker(dy,dx,proo);
                         showMarker();
-                        ttime = time;
-                        tdistance = distance;
+                        //ttime = time;
+                        //tdistance = distance;
                         //Intent intent = new Intent(mContext, NaviActivity.class);
                         //intent.putExtra("totalTime", time);
                         //intent.putExtra("totalDistance",distance);
 
                         //mContext.startActivity(intent);
-                        Log.d("minig", String.valueOf(ttime));
-                        Log.d("minig", String.valueOf(tdistance));
+                        //Log.d("minig", String.valueOf(ttime));
+                        //Log.d("minig", String.valueOf(tdistance));
 
                     } catch (NumberFormatException e){
 
