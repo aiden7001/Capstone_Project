@@ -58,7 +58,7 @@ import static test.com.a170326.RouteActivity.httpclient;
  * Created by Heera on 2017-06-20.
  */
 
-public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, TMapGpsManager.onLocationChangedCallback {
+public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
     private static String mApiKey = "759b5f01-999a-3cb1-a9ed-f05e2f121476";
     public String URI_RECEIVE_DISTANCE_INFO;
@@ -93,16 +93,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     Double speed;
     double myspeed;
 
-    LocationManager mLM;
-
     long now = System.currentTimeMillis();
-
-    @Override
-    public void onLocationChange(Location location) {
-        if(location!=null){
-            myspeed = location.getSpeed();
-        }
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -142,8 +133,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         m = (int)(Math.round(distance)%1000.0/100.0);
         myspeed = 0;
         //Toast.makeText(NaviActivity.this, (int) myspeed,Toast.LENGTH_LONG).show();
-        mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
+        
         dest_info = (TextView) findViewById(R.id.dest_info);
         showtime = (TextView) findViewById(R.id.totaltime);
         showdistance = (TextView) findViewById(R.id.totaldistance);
