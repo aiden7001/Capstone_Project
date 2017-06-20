@@ -27,7 +27,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -71,6 +70,7 @@ public class NaviActivity extends AppCompatActivity implements TMapGpsManager.on
     int km,m;
     Double speed;
 
+
     @Override
     public void onLocationChange(Location location) {
         if (m_bTrackingMode) {
@@ -96,12 +96,15 @@ public class NaviActivity extends AppCompatActivity implements TMapGpsManager.on
 
         start();
 
+
         mContext = this;
+
 
         Intent naviTointent = getIntent();
         dest_lat = naviTointent.getExtras().getString("dest_lat");
         dest_lon = naviTointent.getExtras().getString("dest_lon");
         dest_add = naviTointent.getExtras().getString("dest_address");
+<<<<<<< HEAD
         //time = naviTointent.getExtras().getDouble("totalTime");
         distance = naviTointent.getExtras().getDouble("totalDistance");
         speed = 15000.0/3600.0;
@@ -110,10 +113,13 @@ public class NaviActivity extends AppCompatActivity implements TMapGpsManager.on
         minute = (int)(Math.round(time)%3600.0/60.0);
         km = (int)(Math.round(distance)/1000.0);
         m = (int)(Math.round(distance)%1000.0/100.0);
+=======
+>>>>>>> e7df73ee9452a243cb839a5509ce856e56e37a5a
 
         dest_info = (TextView) findViewById(R.id.dest_info);
         showtime = (TextView) findViewById(R.id.totaltime);
         showdistance = (TextView) findViewById(R.id.totaldistance);
+
 
         dest_info.setText(dest_add);
         showtime.setText(Double.toString(time));

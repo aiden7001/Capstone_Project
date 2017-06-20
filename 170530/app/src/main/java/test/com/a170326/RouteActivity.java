@@ -111,8 +111,15 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     int mturn;
     String start_add;
     String dest_add;
+<<<<<<< HEAD
     Double ttime;
     Double tdistance;
+=======
+
+    Intent intentTonavi;
+
+
+>>>>>>> e7df73ee9452a243cb839a5509ce856e56e37a5a
 
     TMapAddressInfo addressInfoSave = new TMapAddressInfo();
 
@@ -151,11 +158,12 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_showroute);
         Log.d("mini", "main");
 
         listView = (ListView)findViewById(R.id.navilist);
-
-        setContentView(R.layout.activity_showroute);
+        guide = (Button)findViewById(R.id.guide);
+        intentTonavi = new Intent(RouteActivity.this, NaviActivity.class);
 
 
         start();
@@ -264,6 +272,23 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
             }
         });*/
+
+        guide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, NaviActivity.class);
+
+                //Log.d("mini2", String.valueOf(input_start));
+                intent.putExtra("dest_address", dest_add);
+                //Log.d("mini2", String.valueOf(input_dest));
+                intent.putExtra("dest_lat",dest_lat);
+                intent.putExtra("dest_lon",dest_lon);
+                //intent.putExtra("dest_lat",String.valueOf(dest_point.getLatitude()));
+                //intent.putExtra("dest_lon",String.valueOf(dest_point.getLongitude()));
+
+                mContext.startActivity(intent);
+            }
+        });
 
     }
 
