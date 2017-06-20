@@ -52,7 +52,9 @@ public class FirstActivity extends AppCompatActivity {
         findroute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("mini","1");
                 startActivity(new Intent(FirstActivity.this, MainActivity.class));
+                Log.d("mini","2");
             }
         });
 

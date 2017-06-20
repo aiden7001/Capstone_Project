@@ -189,6 +189,24 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
         mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         tmapview = (TMapView) findViewById(R.id.map_view2);
+        guide = (Button) findViewById(R.id.guide);
+        guide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, NaviActivity.class);
+
+                //intent.putExtra("start_address",start_add);
+                //Log.d("mini2", String.valueOf(input_start));
+                intent.putExtra("dest_address", dest_add);
+                //Log.d("mini2", String.valueOf(input_dest));
+                intent.putExtra("dest_lat",dest_lat);
+                intent.putExtra("dest_lon",dest_lon);
+                //intent.putExtra("dest_lat",String.valueOf(dest_point.getLatitude()));
+                //intent.putExtra("dest_lon",String.valueOf(dest_point.getLongitude()));
+
+                mContext.startActivity(intent);
+            }
+        });
         /*tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
             @Override
             public void SKPMapApikeySucceed() {
