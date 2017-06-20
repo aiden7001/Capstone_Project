@@ -58,7 +58,8 @@ public class NaviActivity extends AppCompatActivity implements TMapGpsManager.on
     String dest_lat;
     String dest_lon;
     String dest_add;
-    TextView dest_info;
+    private TextView dest_info;
+
 
     @Override
     public void onLocationChange(Location location) {
@@ -74,8 +75,6 @@ public class NaviActivity extends AppCompatActivity implements TMapGpsManager.on
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navi);
 
-        mContext = this;
-
         tmapgps = new TMapGpsManager(NaviActivity.this);
         tmapgps.setMinTime(1000);
         tmapgps.setMinDistance(5);
@@ -85,12 +84,17 @@ public class NaviActivity extends AppCompatActivity implements TMapGpsManager.on
 
         start();
 
-        dest_info = (TextView)findViewById(R.id.destinfo);
+
+        mContext = this;
+
 
         Intent naviTointent = getIntent();
         dest_lat = naviTointent.getExtras().getString("dest_lat");
         dest_lon = naviTointent.getExtras().getString("dest_lon");
         dest_add = naviTointent.getExtras().getString("dest_address");
+
+        dest_info = (TextView) findViewById(R.id.dest_info);
+
 
         dest_info.setText(dest_add);
 

@@ -3,10 +3,20 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+<<<<<<< HEAD
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/destinfo"
         android:background="#FFFFAA"/>
+=======
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="hiiiiiiiiiiiiiiiii"
+        android:id="@+id/dest_info"/>
+>>>>>>> ee5f8460032f9b0ee35046285e4d90bf15d8a807
 
 </LinearLayout>
