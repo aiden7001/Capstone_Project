@@ -157,7 +157,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         Log.d("mini", "main");
 
         listView = (ListView)findViewById(R.id.navilist);
-        guide = (Button)findViewById(R.id.navibt);
+        guide = (Button)findViewById(R.id.guide);
         intentTonavi = new Intent(RouteActivity.this, NaviActivity.class);
 
 

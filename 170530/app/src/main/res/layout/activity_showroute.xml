@@ -64,21 +64,10 @@
 
     </RelativeLayout>
 
-<<<<<<< HEAD
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="안내 시작 "
-        android:id="@+id/navibt"
-        android:layout_gravity="center"/>
-
-
-=======
 <Button
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/guide"
     android:text="안내시작"/>
->>>>>>> ee5f8460032f9b0ee35046285e4d90bf15d8a807
 
 </LinearLayout>
