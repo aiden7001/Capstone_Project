@@ -348,6 +348,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                 HttpResponse response = httpclient.execute(httppost);
                 StatusLine statusLine = response.getStatusLine();
 
+
                 if (statusLine.getStatusCode() == 200) {
                     HttpEntity entity = response.getEntity();
                     InputStream content = entity.getContent();
@@ -387,9 +388,9 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                     return "FALSE";
                 }
 
+
                   /* -- Save data --*/
                 for (int i = 0; i < countriesArray.length(); i++) {
-
 
                     JSONObject JObject = countriesArray.getJSONObject(i);
 
@@ -425,6 +426,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                         //Log.d("minig", String.valueOf(tdistance));
 
                     } catch (NumberFormatException e){
+
                     }
 
                     if(pro.equals("Point")){
@@ -462,7 +464,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         }
 
         protected void onPostExecute(String result) {
-            //Log.i("psj", "heera : login 00001 ttt"+result);
+            Log.i("psj", "heera : login 00001 ttt"+result);
 
             NaviListViewAdapter adapter;
 
