@@ -111,10 +111,10 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     int mturn;
     String start_add;
     String dest_add;
+    Double ttime;
+    Double tdistance;
 
     Intent intentTonavi;
-
-
 
     TMapAddressInfo addressInfoSave = new TMapAddressInfo();
 
@@ -123,7 +123,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     ArrayList<String> saveTurn = new ArrayList<String>();
     ArrayList<MapPoint> saveRoutePoint = new ArrayList<MapPoint>();
     ArrayList<TMapPoint> saveRouteTurnPoint = new ArrayList<TMapPoint>();
-    ArrayList<Integer> saveRouteTurn = new ArrayList<Integer>();
+    ArrayList<TMapPoint> saveRouteTurn = new ArrayList<TMapPoint>();
     //private ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -196,18 +196,19 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         guide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, NaviActivity.class);
 
                 //intent.putExtra("start_address",start_add);
                 //Log.d("mini2", String.valueOf(input_start));
-                intent.putExtra("dest_address", dest_add);
+                intentTonavi.putExtra("dest_address", dest_add);
                 //Log.d("mini2", String.valueOf(input_dest));
-                intent.putExtra("dest_lat",dest_lat);
-                intent.putExtra("dest_lon",dest_lon);
+                intentTonavi.putExtra("dest_lat",dest_lat);
+                intentTonavi.putExtra("dest_lon",dest_lon);
+                intentTonavi.putExtra("totalDistance",tdistance);
+                intentTonavi.putExtra("totalTime",ttime);
                 //intent.putExtra("dest_lat",String.valueOf(dest_point.getLatitude()));
                 //intent.putExtra("dest_lon",String.valueOf(dest_point.getLongitude()));
 
-                mContext.startActivity(intent);
+                mContext.startActivity(intentTonavi);
             }
         });
         /*tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
@@ -266,23 +267,6 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
             }
         });*/
 
-        guide.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, NaviActivity.class);
-
-                //Log.d("mini2", String.valueOf(input_start));
-                intent.putExtra("dest_address", dest_add);
-                //Log.d("mini2", String.valueOf(input_dest));
-                intent.putExtra("dest_lat",dest_lat);
-                intent.putExtra("dest_lon",dest_lon);
-                //intent.putExtra("dest_lat",String.valueOf(dest_point.getLatitude()));
-                //intent.putExtra("dest_lon",String.valueOf(dest_point.getLongitude()));
-
-                mContext.startActivity(intent);
-            }
-        });
-
     }
 
     public void showRoute(){
@@ -305,6 +289,8 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                 tMapPolyLine.setLineWidth(10);
                 tMapPolyLine.setID("path");
                 Ddistance = tMapPolyLine.getDistance();
+                //saveRouteTurn = tMapPolyLine.getPassPoint();
+                Log.d("minig", String.valueOf(Ddistance));
                 tmapview.addTMapPath(tMapPolyLine);
                 tmapview.setTrackingMode(true);
             }
@@ -341,6 +327,8 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
             Double dx=0.0;
             Double dy=0.0;
             double coorx;
+            Double time = 0.0;
+            Double distance = 0.0;
 
 
             /*** Add data to send ***/
@@ -409,6 +397,8 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                     result = JObject.getString("geometry");
                     result2 = JObject.getString("properties");
                     proo = JObject.getJSONObject("properties").getString("description");
+                    time = JObject.getJSONObject("properties").getDouble("totalTime");
+                    distance = JObject.getJSONObject("properties").getDouble("totalDistance");
                     pro = JObject.getJSONObject("geometry").getString("type");
                     prox = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(0);
                     proy = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(1);
@@ -425,6 +415,15 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                         //saveRoutePoint.add(new TMapPoint(dy,dx));
                         addMarker(dy,dx,proo);
                         showMarker();
+                        ttime = time;
+                        tdistance = distance;
+                        //Intent intent = new Intent(mContext, NaviActivity.class);
+                        //intent.putExtra("totalTime", time);
+                        //intent.putExtra("totalDistance",distance);
+
+                        //mContext.startActivity(intent);
+                        Log.d("minig", String.valueOf(ttime));
+                        Log.d("minig", String.valueOf(tdistance));
 
                     } catch (NumberFormatException e){
                     }
