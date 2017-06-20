@@ -349,6 +349,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                 HttpResponse response = httpclient.execute(httppost);
                 StatusLine statusLine = response.getStatusLine();
 
+
                 if (statusLine.getStatusCode() == 200) {
                     HttpEntity entity = response.getEntity();
                     InputStream content = entity.getContent();
@@ -388,17 +389,17 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                     return "FALSE";
                 }
 
+
                   /* -- Save data --*/
                 for (int i = 0; i < countriesArray.length(); i++) {
-
 
                     JSONObject JObject = countriesArray.getJSONObject(i);
 
                     result = JObject.getString("geometry");
                     result2 = JObject.getString("properties");
                     proo = JObject.getJSONObject("properties").getString("description");
-                    time = JObject.getJSONObject("properties").getDouble("totalTime");
-                    distance = JObject.getJSONObject("properties").getDouble("totalDistance");
+                    //time = JObject.getJSONObject("properties").getDouble("totalTime");
+                    //distance = JObject.getJSONObject("properties").getDouble("totalDistance");
                     pro = JObject.getJSONObject("geometry").getString("type");
                     prox = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(0);
                     proy = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(1);
@@ -426,6 +427,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                         Log.d("minig", String.valueOf(tdistance));
 
                     } catch (NumberFormatException e){
+
                     }
 
                     if(pro.equals("Point")){
@@ -463,7 +465,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         }
 
         protected void onPostExecute(String result) {
-            //Log.i("psj", "heera : login 00001 ttt"+result);
+            Log.i("psj", "heera : login 00001 ttt"+result);
 
             NaviListViewAdapter adapter;
 

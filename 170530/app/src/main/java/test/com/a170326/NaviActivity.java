@@ -52,7 +52,7 @@ import static test.com.a170326.RouteActivity.httpclient;
  * Created by Heera on 2017-06-20.
  */
 
-public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, TMapGpsManager.onLocationChangedCallback {
 
     private static String mApiKey = "759b5f01-999a-3cb1-a9ed-f05e2f121476";
     public String URI_RECEIVE_DISTANCE_INFO;
@@ -67,10 +67,10 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private TMapGpsManager tmapgps = null;
     GpsInfo info_gps;
 
-    TMapPoint now_point;
-
     String dest_lat;
     String dest_lon;
+    String sta_lat;
+    String sta_lon;
     String dest_add;
     String d_distance;
     private TextView dest_info;
@@ -84,7 +84,12 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     int km,m;
     Double speed;
 
+    @Override
+    public void onLocationChange(Location location) {
+        sta_lon = String.valueOf(info_gps.getLongitude());
+        sta_lat = String.valueOf(info_gps.getLatitude());
 
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,12 +108,12 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         info_gps = new GpsInfo(NaviActivity.this);
 
         mContext = this;
-        now_point = tmapgps.getLocation();
 
         Intent naviTointent = getIntent();
         dest_lat = naviTointent.getExtras().getString("dest_lat");
         dest_lon = naviTointent.getExtras().getString("dest_lon");
         dest_add = naviTointent.getExtras().getString("dest_address");
+
 
         //time = naviTointent.getExtras().getDouble("totalTime");
         distance = naviTointent.getExtras().getDouble("totalDistance");
@@ -130,7 +135,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         dest_info.setText(dest_add);
 
-        URI_RECEIVE_DISTANCE_INFO = "https://apis.skplanetx.com/tmap/routes/distance?startX="+String.valueOf(info_gps.getLongitude())+"&startY="+String.valueOf(info_gps.getLatitude())+"&endX="+dest_lon+"&reqCoordType=WGS84GEO&endY="+dest_lat+"&callback=&version=1&format=json&appKey=" + mApiKey;
+        //URI_RECEIVE_DISTANCE_INFO = "https://apis.skplanetx.com/tmap/routes/distance?startX="+String.valueOf(info_gps.getLongitude())+"&startY="+String.valueOf(info_gps.getLatitude())+"&endX="+dest_lon+"&reqCoordType=WGS84GEO&endY="+dest_lat+"&callback=&version=1&format=json&appKey=" + mApiKey;
 
         showtime.setText(Double.toString(time));
         showdistance.setText(Double.toString(hour));
@@ -139,10 +144,22 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Log.d("minig", String.valueOf(km));
         Log.d("minig", String.valueOf(m));
 
+        URI_RECEIVE_DISTANCE_INFO = make_url(String.valueOf(info_gps.getLongitude()), String.valueOf(info_gps.getLatitude()),dest_lon,dest_lat);
+        url_connetion(URI_RECEIVE_DISTANCE_INFO);
+
+    }
+
+    public String make_url(String start_lon, String start_lat, String destination_lon, String destination_lat){
+        String url = "https://apis.skplanetx.com/tmap/routes/distance?startX="+start_lon+"&startY="+start_lat+"&endX="+destination_lon+"&reqCoordType=WGS84GEO&endY="+destination_lat+"&callback=&version=1&format=json&appKey=" + mApiKey;
+
+        return url;
+    }
+
+    public void url_connetion(String input_url){
 
         try
         {
-            URL url = new URL(URI_RECEIVE_DISTANCE_INFO);
+            URL url = new URL(input_url);
             URLConnection urlConnection = url.openConnection();
             HttpURLConnection httpUrlConnection = (HttpURLConnection)urlConnection;
 
@@ -174,6 +191,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
             Log.e("error", "I/O exception");
             e.printStackTrace();
         }
+
     }
 
     public static String convertStreamToString(InputStream inputStream) {
