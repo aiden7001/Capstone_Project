@@ -130,8 +130,9 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
         Log.i("compare:",String.valueOf(compare));
         fdistance = distance - (line_list.get(point_index) - compare) - ddistance;
-        leftdistance = String.valueOf(fdistance);
-        marker_distance.setText(leftdistance);
+        //leftdistance = String.valueOf(fdistance);
+
+        marker_distance.setText(String.valueOf(compare));
 
         if(entrance == 0){
 
@@ -207,13 +208,14 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         //time = naviTointent.getExtras().getDouble("totalTime");
         distance = naviTointent.getExtras().getDouble("totalDistance");
+        fdistance = distance;
         Log.d("minig", String.valueOf(distance));
         speed = 15000.0/3600.0;
-        time = distance/speed;
+        time = fdistance/speed;
         hour = (int)(Math.round(time)/3600.0);
         minute = (int)(Math.round(time)%3600.0/60.0);
-        km = (int)(Math.round(distance)/1000.0);
-        m = (int)(Math.round(distance)%1000.0/100.0);
+        km = (int)(Math.round(fdistance)/1000.0);
+        m = (int)(Math.round(fdistance)%1000.0/100.0);
         myspeed = 0;
         //Toast.makeText(NaviActivity.this, (int) myspeed,Toast.LENGTH_LONG).show();
 
