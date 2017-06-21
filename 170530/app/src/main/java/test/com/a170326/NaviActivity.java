@@ -2,6 +2,7 @@ package test.com.a170326;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -71,6 +72,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     ArrayList<MapPoint> list;
     ArrayList<String> turn_list;
     ArrayList<String> desc_list;
+    ArrayList<Double> line_list;
 
     public static Context mContext = null;
     private boolean m_bTrackingMode = true;
@@ -86,6 +88,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private TextView dest_info;
     private TextView showtime;
     private TextView showdistance;
+    private TextView marker_distance;
     private TextToSpeech myTTS;
     private TextView currenttime;
     private ImageView arrow;
@@ -93,9 +96,12 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     Double time;
     Double distance;
+    Double fdistance;
+    Double ddistance = 0.0;
     int hour,minute;
     int km,m;
     int point_index = 0;
+    int entrance = 0;
     int compare;
     Double speed;
     double myspeed;
@@ -105,11 +111,16 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     long now = System.currentTimeMillis();
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
     public void onLocationChange(Location location) {
         sta_lon = String.valueOf(info_gps.getLongitude());
         sta_lat = String.valueOf(info_gps.getLatitude());
-        URI_RECEIVE_DISTANCE_INFO = make_url(String.valueOf(info_gps.getLongitude()), String.valueOf(info_gps.getLatitude()),String.valueOf(list.get(point_index).getLongitude()),String.valueOf(list.get(point_index).getLongitude()));
 
+        URI_RECEIVE_DISTANCE_INFO = make_url(String.valueOf(info_gps.getLongitude()), String.valueOf(info_gps.getLatitude()),String.valueOf(list.get(point_index).getLongitude()),String.valueOf(list.get(point_index).getLongitude()));
         try{
             compare = Integer.parseInt(url_connetion(URI_RECEIVE_DISTANCE_INFO));
         } catch (NumberFormatException e){
@@ -117,21 +128,42 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         } catch (RuntimeException e){
             e.printStackTrace();
         }
-        if(compare<=80){
-            myTTS.speak(desc_list.get(point_index), TextToSpeech.QUEUE_ADD, null);
-            if (turn_list.get(point_index).equals("11")){
-                arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.upward));
+        Log.i("compare:",String.valueOf(compare));
+        fdistance = distance - (line_list.get(point_index) - compare) - ddistance;
+        leftdistance = String.valueOf(fdistance);
+        marker_distance.setText(leftdistance);
+
+        if(entrance == 0){
+
+            if(compare<=10){
+                myTTS.speak(desc_list.get(point_index), TextToSpeech.QUEUE_ADD, null);
+                if (turn_list.get(point_index).equals("11")){
+                    arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.upward));
+                }
+                else if(turn_list.get(point_index).equals("12")){
+                    arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.back));
+                }
+                else if(turn_list.get(point_index).equals("13")){
+                    arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.forward));
+                }
+                else {
+                    arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.forward));
+                }
+
             }
-            else if(turn_list.get(point_index).equals("12")){
-                arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.back));
-            }
-            else if(turn_list.get(point_index).equals("13")){
-                arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.forward));
-            }
-            else {
-                arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.forward));
+
+            entrance = 1;
+
+        }
+
+        if (compare <= 1){
+
+            for(int i=0; i<(point_index-1); i++){
+                ddistance = ddistance+line_list.get(i);
             }
             point_index++;
+            entrance = 0;
+
         }
 
     }
@@ -146,6 +178,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         SimpleDateFormat sdfNow = new SimpleDateFormat("HH:mm:ss", Locale.KOREA);
         String formatDate = sdfNow.format(date);
         arrow = (ImageView)findViewById(R.id.arrow);
+        marker_distance = (TextView)findViewById(R.id.direct_info);
 
         tmapgps = new TMapGpsManager(NaviActivity.this);
         tmapgps.setMinTime(1000);
@@ -165,10 +198,12 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         list = (ArrayList<MapPoint>) getIntent().getSerializableExtra("list");
         turn_list = (ArrayList<String>) getIntent().getSerializableExtra("turn_list");
         desc_list = (ArrayList<String>) getIntent().getSerializableExtra("desc_list");
+        line_list = (ArrayList<Double>) getIntent().getSerializableExtra("line_list");
 
         Log.i("tkdlwm:",String.valueOf(list.size()));
         Log.i("tkdlwm2:",String.valueOf(turn_list.size()));
         Log.i("tkdlwm3:",String.valueOf(desc_list.size()));
+        Log.i("tkdlwm4:",String.valueOf(line_list.size()));
 
         //time = naviTointent.getExtras().getDouble("totalTime");
         distance = naviTointent.getExtras().getDouble("totalDistance");
@@ -325,4 +360,8 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         myTTS.shutdown();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }

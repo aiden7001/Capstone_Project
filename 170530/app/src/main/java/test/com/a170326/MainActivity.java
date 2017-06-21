@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     private TMapGpsManager tmapgps = null;
     private TMapData Tmapdata = new TMapData();
-    TMapView tmapview=null;
+    TMapView tmapview;
     LocationManager mLM;
     public static double Ddistance;
     String Distance;
@@ -171,22 +171,22 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         mContext = this;
 
-        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view);
+        tmapview = (TMapView) findViewById(R.id.map_view);
 
         input_start = (EditText) findViewById(R.id.search_sta);
         input_dest = (EditText) findViewById(R.id.search_dest);
         search = (Button) findViewById(R.id.search_button);
         route = (Button) findViewById(R.id.route);
 
-        //mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        tmapview = new TMapView(this);
-        /*tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
+        mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //tmapview = new TMapView(this);
+        tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
             @Override
             public void SKPMapApikeySucceed() {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //setupMap();
+                        setupMap();
                     }
                 });
             }
@@ -195,9 +195,9 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             public void SKPMapApikeyFailed(String s) {
 
             }
-        });*/
+        });
         tmapview.setSKPMapApiKey(mApiKey);
-        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
+        /*tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
 
         tmapview = new TMapView(this);
         linearLayout.addView(tmapview);
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tmapgps.setMinDistance(5);
         tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
         //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
-        tmapgps.OpenGps();
+        tmapgps.OpenGps();*/
 
         TMapPolyLine polyLine = new TMapPolyLine();
         polyLine.setLineWidth(3);
@@ -522,7 +522,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         id++;
     }
 
-    int id = 0;
+    int id = 0;*/
 
     boolean isInitialized = false;
 
@@ -612,8 +612,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         public void onProviderDisabled(String s) {
 
         }
-    };*/
+    };
 }
-
 
 
