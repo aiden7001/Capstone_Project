@@ -181,6 +181,7 @@ for frame in camera.capture_continuous( rawCapture,format="bgr",use_video_port=T
                                 parse = ''.join(temp)
 
                                 ##judge if the person is already registered customer
+                                #change the value(s_ratio) along your amount of data in db
                                 sql_4 = "select id, sum_ratio from registration_table where id=%s and sum_ratio - %s<0.05 and sum_ratio-%s>-0.05;"
                                 cur.execute(sql_4,(parse,s_ratio,s_ratio))
                                 result_4 = cur.fetchall()
