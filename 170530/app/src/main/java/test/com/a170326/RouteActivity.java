@@ -76,7 +76,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.LogRecord;
 
-public class RouteActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback{
+public class RouteActivity extends AppCompatActivity {
 
     public static Context mContext = null;
     private boolean m_bTrackingMode = true;
@@ -93,7 +93,6 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     private Button route;
     private Button btnShowLocation;
     private Button guide;
-    private Button handle;
     ListView listView;
 
     private GpsInfo gps;
@@ -153,12 +152,12 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     private JSONArray countriesArray;
     private JSONArray countries;
 
-    @Override
+    /*@Override
     public void onLocationChange(Location location) {
         if (m_bTrackingMode) {
             tmapview.setLocationPoint(location.getLongitude(), location.getLatitude());
         }
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,7 +195,6 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         });
         tmapview.setSKPMapApiKey(mApiKey);
         //showRoute();
-        handle = (Button) findViewById(R.id.handle);
 
         Intent intent = getIntent();
         start_lat= intent.getExtras().getString("start_lat");
@@ -237,9 +235,19 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                 //intentTonavi.putExtra("totalTime",ttime);
                 //intent.putExtra("dest_lat",String.valueOf(dest_point.getLatitude()));
                 //intent.putExtra("dest_lon",String.valueOf(dest_point.getLongitude()));
+                /*intentTonavi.putExtra("dest_address", dest_add);
+                //Log.d("mini2", String.valueOf(input_dest));
+                intentTonavi.putExtra("dest_lat",dest_lat);
+                intentTonavi.putExtra("dest_lon",dest_lon);
+                intentTonavi.putExtra("totalDistance",Ddistance);
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
+                intentTonavi.putExtra("list",saveRoutePoint);
+                intentTonavi.putExtra("turn_list",saveTurn);
+                intentTonavi.putExtra("desc_list",saveDescription);
+                mContext.startActivity(intentTonavi);*/
+
+                Handler handler1 = new Handler();
+                handler1.postDelayed(new Runnable() {
                     @Override
                     public void run() {
 
@@ -252,6 +260,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                         intentTonavi.putExtra("list",saveRoutePoint);
                         intentTonavi.putExtra("turn_list",saveTurn);
                         intentTonavi.putExtra("desc_list",saveDescription);
+                        intentTonavi.putExtra("line_list",saveLineString);
                         mContext.startActivity(intentTonavi);
                     }
                 },250);
@@ -312,7 +321,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                 showdistance.setText(leftdistance);
                 showtime.setText(lefttime);
             }
-        }, 500);
+        }, 2000);
 
         /*route.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -349,7 +358,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                 Log.d("minig", String.valueOf(Ddistance));
                 tmapview.addTMapPath(tMapPolyLine);
                 tmapview.setTrackingMode(true);
-
+                setMyLocation(start_point.getLatitude(),start_point.getLongitude());
                 //tmapview.setTMapPoint(start_point.getLatitude(),start_point.getLongitude());
             }
         });
@@ -676,7 +685,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         //Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_place);
         //tmapview.setIcon(bitmap);
         tmapview.setLocationPoint(lng, lat);
-        tmapview.setIconVisibility(true);
+        //tmapview.setIconVisibility(true);
     }
 
     LocationListener mListener = new LocationListener() {
@@ -715,4 +724,3 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     }
 
 }
-
