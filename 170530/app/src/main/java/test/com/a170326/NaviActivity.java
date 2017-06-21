@@ -110,20 +110,27 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         sta_lat = String.valueOf(info_gps.getLatitude());
         URI_RECEIVE_DISTANCE_INFO = make_url(String.valueOf(info_gps.getLongitude()), String.valueOf(info_gps.getLatitude()),String.valueOf(list.get(point_index).getLongitude()),String.valueOf(list.get(point_index).getLongitude()));
 
-        compare = Integer.parseInt(url_connetion(URI_RECEIVE_DISTANCE_INFO));
+        try{
+            compare = Integer.parseInt(url_connetion(URI_RECEIVE_DISTANCE_INFO));
+        } catch (NumberFormatException e){
+            e.printStackTrace();
+        } catch (RuntimeException e){
+            e.printStackTrace();
+        }
         if(compare<=80){
             myTTS.speak(desc_list.get(point_index), TextToSpeech.QUEUE_ADD, null);
             if (turn_list.get(point_index).equals("11")){
-                arrow.setImageDrawable(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.upward));
+                arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.upward));
             }
             else if(turn_list.get(point_index).equals("12")){
-                arrow.setImageDrawable(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.back));
+                arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.back));
             }
             else if(turn_list.get(point_index).equals("13")){
-                arrow.setImageDrawable(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.forward));
+                arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.forward));
             }
             else {
-                arrow.setImageDrawable(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.forward));
+                arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.forward));
+
             }
             point_index++;
         }
@@ -139,6 +146,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Date date = new Date(now);
         SimpleDateFormat sdfNow = new SimpleDateFormat("HH:mm:ss", Locale.KOREA);
         String formatDate = sdfNow.format(date);
+        arrow = (ImageView)findViewById(R.id.arrow);
 
         tmapgps = new TMapGpsManager(NaviActivity.this);
         tmapgps.setMinTime(1000);

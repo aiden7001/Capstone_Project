@@ -1,10 +1,15 @@
 package test.com.a170326;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
 /**
  * Created by Heera on 2017-03-26.
  */
 
-public class MapPoint {
+public class MapPoint implements Serializable{
 
     private String Name;
     private double latitude;
@@ -19,6 +24,7 @@ public class MapPoint {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
 
     public String getName(){
         return Name;

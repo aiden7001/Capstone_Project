@@ -97,8 +97,12 @@
             android:layout_below="@+id/time"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+<<<<<<< HEAD
             android:layout_marginTop="53dp"
             android:src="@drawable/forward" />
+=======
+            android:layout_marginTop="53dp" />
+>>>>>>> 96aac515b3e9e9d783dcbda1b6f77721523fe1a2
 
     </RelativeLayout>
 

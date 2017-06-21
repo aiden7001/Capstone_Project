@@ -14,6 +14,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -117,7 +118,6 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
     TMapAddressInfo addressInfoSave = new TMapAddressInfo();
 
-
     ArrayList<String> saveDescription = new ArrayList<String>();
     ArrayList<String> saveTurn = new ArrayList<String>();
     ArrayList<MapPoint> saveRoutePoint = new ArrayList<MapPoint>();
@@ -198,16 +198,27 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
                 //intent.putExtra("start_address",start_add);
                 //Log.d("mini2", String.valueOf(input_start));
-                intentTonavi.putExtra("dest_address", dest_add);
-                //Log.d("mini2", String.valueOf(input_dest));
-                intentTonavi.putExtra("dest_lat",dest_lat);
-                intentTonavi.putExtra("dest_lon",dest_lon);
-                intentTonavi.putExtra("totalDistance",Ddistance);
                 //intentTonavi.putExtra("totalTime",ttime);
                 //intent.putExtra("dest_lat",String.valueOf(dest_point.getLatitude()));
                 //intent.putExtra("dest_lon",String.valueOf(dest_point.getLongitude()));
 
-                mContext.startActivity(intentTonavi);
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        intentTonavi.putExtra("dest_address", dest_add);
+                        //Log.d("mini2", String.valueOf(input_dest));
+                        intentTonavi.putExtra("dest_lat",dest_lat);
+                        intentTonavi.putExtra("dest_lon",dest_lon);
+                        intentTonavi.putExtra("totalDistance",Ddistance);
+
+                        intentTonavi.putExtra("list",saveRoutePoint);
+                        intentTonavi.putExtra("turn_list",saveTurn);
+                        intentTonavi.putExtra("desc_list",saveDescription);
+                        mContext.startActivity(intentTonavi);
+                    }
+                },250);
             }
         });
         tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
@@ -476,18 +487,18 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
             adapter.clearItem();
 
             for(int i=0; i<saveTurn.size(); i++){
-                Log.i("anjdi:","10");
-                if (saveTurn.get(i).equals(11)){
+                Log.i("xjs:",String.valueOf(saveTurn.get(i)));
+                if (saveTurn.get(i).equals("11")){
                     adapter.addItem(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.upward), saveDescription.get(i));
-                    Log.i("anjdi:","11");
                 }
-                else if(saveTurn.get(i).equals(12)){
+                else if(saveTurn.get(i).equals("12")){
                     adapter.addItem(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.back), saveDescription.get(i));
-                    Log.i("anjdi:","12");
+                }
+                else if(saveTurn.get(i).equals("13")){
+                    adapter.addItem(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.forward), saveDescription.get(i));
                 }
                 else {
                     adapter.addItem(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.forward), saveDescription.get(i));
-                    Log.i("anjdi:","13");
                 }
 
             }
@@ -648,8 +659,6 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         saveTurn.add(String.valueOf(mturn));
         saveDescription.add(mdes);
     }
-
-
 
 }
 
