@@ -245,7 +245,10 @@ beacon_finder.start()
 beacon_condition = BeaconCondition()
 beacon_condition.start()
 
-
+try:
+        a = input()
+except:
+        exit()
 
 # (DB) parking_location => location of the bicycle(beacon major number)
 # (DB) parking_mode => parking mode(1) or driving mode(0) => check the data and actuate the beacon

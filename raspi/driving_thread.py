@@ -1,6 +1,8 @@
 import RPi.GPIO as gpio
 import time
 import threading
+import socket
+import sys
 
 gpio.setmode(gpio.BCM)
 
@@ -8,6 +10,8 @@ gpio.setup(23, gpio.IN)
 gpio.setup(24, gpio.IN)
 gpio.setup(20, gpio.OUT)
 gpio.output(20,False)
+gpio.setup(17, gpio.OUT)
+gpio.output(17,False)
 gpio.setup(21, gpio.OUT)
 gpio.output(21,False)
 gpio.setup(6, gpio.OUT) # left_trig
@@ -15,7 +19,8 @@ gpio.setup(5, gpio.IN) # left_echo
 gpio.setup(26, gpio.OUT) # buzzor
 gpio.setup(13, gpio.OUT) # right_trig
 gpio.setup(19, gpio.IN) # right_echo
-        
+
+
 class left_light(threading.Thread):
     def run(self):
         global left_check
@@ -36,13 +41,15 @@ class left_light(threading.Thread):
                     distance = pulse_duration * 17000
                     distance = round(distance, 2)
                     
-                if distance < 20:
+                if distance < 20 or distance > 1000:
                     print "left_Distance : ", distance, "cm"
                     gpio.output(26, True)
                     
                 gpio.output(20,True)
+                gpio.output(17,True)
                 time.sleep(0.5)
                 gpio.output(20,False)
+                gpio.output(17,False)
                 gpio.output(26,False)
             else:
                 time.sleep(0.3)
@@ -69,18 +76,22 @@ class right_light(threading.Thread):
                     distance = pulse_duration * 17000
                     distance = round(distance, 2)
                     
-                if distance < 20:
+                if distance < 20 or distance > 1000:
                     print "right_Distance : ", distance, "cm"
                     gpio.output(26, True)
-                
+                    
                 gpio.output(21,True)
+                gpio.output(17,True)
                 time.sleep(0.5)
                 gpio.output(21,False)
+                gpio.output(17,False)
                 gpio.output(26,False)
                 
             else:
                 time.sleep(0.3)
-            
+
+
+
 try:
     light_0 = left_light()
     light_0.start()

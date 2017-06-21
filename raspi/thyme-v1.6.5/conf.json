@@ -31,6 +31,14 @@
         {
             "parentpath": "/dongguk-capstone",
             "ctname": "parking_state"
+        },
+        {
+            "parentpath": "/dongguk-capstone",
+            "ctname": "left_light"
+        },
+        {
+            "parentpath": "/dongguk-capstone",
+            "ctname": "right_light"
         }
     ],
     "sub": [
