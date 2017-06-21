@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1">
     <TextView
         android:layout_width="30dp"
+        android:id="@+id/a1"
         android:layout_height="match_parent"
         android:background="#FF0000"/>
 
     <RelativeLayout
-        android:layout_width="320dp"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:padding="20dp"
-        android:layout_weight="1.10">
+        android:id="@+id/naviinfo"
+        android:layout_weight="1.10"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/a1">
 
         <TextView
             android:id="@+id/dest_info"
@@ -26,20 +30,13 @@
             android:textStyle="bold" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="남은 시간"
-            android:textSize="20dp"
-            android:layout_above="@+id/totaltime"
-            android:layout_alignStart="@+id/totaltime" />
-
-        <TextView
             android:id="@+id/totaltime"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:text="Left Time"
+            android:text=" Left Time"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:drawableStart="@drawable/lefttime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -49,16 +46,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:text="Left Distance"
+            android:drawableStart="@drawable/leftdistance"
+            android:text=" Left Distance"
             android:textSize="20dp"
             android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/totaldistance"
-            android:text="남은 거리"
-            android:textSize="20dp"/>
 
         <TextView
             android:id="@+id/time"
@@ -72,7 +64,6 @@
 
         <TextView
             android:id="@+id/alarm"
-            android:text="사고다발지역"
             android:enabled="false"
             android:layout_below="@+id/direct_info"
             android:layout_marginTop="20dp"
@@ -109,8 +100,11 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/textView3"
         android:layout_width="30dp"
+        android:layout_toRightOf="@+id/naviinfo"
         android:layout_height="match_parent"
-        android:background="#FF0000"/>
+        android:layout_alignParentEnd="true"
+        android:background="#FF0000" />
 
-</LinearLayout>
+</RelativeLayout>

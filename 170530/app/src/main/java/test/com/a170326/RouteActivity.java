@@ -248,6 +248,7 @@ public class RouteActivity extends AppCompatActivity {
 
                 Handler handler1 = new Handler();
                 handler1.postDelayed(new Runnable() {
+
                     @Override
                     public void run() {
 
@@ -261,6 +262,7 @@ public class RouteActivity extends AppCompatActivity {
                         intentTonavi.putExtra("turn_list",saveTurn);
                         intentTonavi.putExtra("desc_list",saveDescription);
                         intentTonavi.putExtra("line_list",saveLineString);
+
                         mContext.startActivity(intentTonavi);
                     }
                 },250);
