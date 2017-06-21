@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         mContext = this;
 
-        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view);
+        tmapview = (TMapView) findViewById(R.id.map_view);
 
         input_start = (EditText) findViewById(R.id.search_sta);
         input_dest = (EditText) findViewById(R.id.search_dest);
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         route = (Button) findViewById(R.id.route);
 
         mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        tmapview = new TMapView(this);
+        //tmapview = new TMapView(this);
         tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
             @Override
             public void SKPMapApikeySucceed() {
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
             }
         });
-        tmapview.setSKPMapApiKey(mApiKey);
+        /*tmapview.setSKPMapApiKey(mApiKey);
         tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
 
         tmapview = new TMapView(this);
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tmapgps.setMinDistance(5);
         tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
         //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
-        tmapgps.OpenGps();
+        tmapgps.OpenGps();*/
 
         TMapPolyLine polyLine = new TMapPolyLine();
         polyLine.setLineWidth(3);
