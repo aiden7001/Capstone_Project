@@ -83,7 +83,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
     private TMapGpsManager tmapgps = null;
     private TMapData Tmapdata = new TMapData();
-    TMapView tmapview = null;
+    TMapView tmapview;
     LocationManager mLM;
     String Distance;
     String mProvider = LocationManager.NETWORK_PROVIDER;
@@ -100,7 +100,10 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
     String input_start;
     String input_dest;
-    private TextView routename;
+    private TextView startname;
+    private TextView destname;
+    private TextView showdistance;
+    private TextView showtime;
     TMapPoint start_point = null;
     TMapPoint dest_point = null;
     String dest_lat;
@@ -113,6 +116,12 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
     String dest_add;
 
     Double Ddistance;
+    Double time;
+    Double speed;
+    int hour,minute;
+    int km,m;
+    String lefttime;
+    String leftdistance;
 
     Intent intentTonavi;
 
@@ -120,10 +129,12 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
     ArrayList<String> saveDescription = new ArrayList<String>();
     ArrayList<String> saveTurn = new ArrayList<String>();
+    ArrayList<Double> saveLineString = new ArrayList<Double>();
     ArrayList<MapPoint> saveRoutePoint = new ArrayList<MapPoint>();
     ArrayList<TMapPoint> saveRouteTurnPoint = new ArrayList<TMapPoint>();
     ArrayList<TMapPoint> saveRouteTurn = new ArrayList<TMapPoint>();
     //private ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -154,17 +165,39 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_showroute);
         Log.d("mini", "main");
-
+        start();
+        mContext = this;
         listView = (ListView)findViewById(R.id.navilist);
         guide = (Button)findViewById(R.id.guide);
         intentTonavi = new Intent(RouteActivity.this, NaviActivity.class);
 
+        tmapview = (TMapView) findViewById(R.id.map_view2);
 
-        start();
 
+        //showRoute();
+
+        mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
+            @Override
+            public void SKPMapApikeySucceed() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setupMap();
+                        //showRoute();
+                    }
+                });
+            }
+
+            @Override
+            public void SKPMapApikeyFailed(String s) {
+
+            }
+        });
+        tmapview.setSKPMapApiKey(mApiKey);
+        //showRoute();
         handle = (Button) findViewById(R.id.handle);
 
-        mContext = this;
         Intent intent = getIntent();
         start_lat= intent.getExtras().getString("start_lat");
         start_lon= intent.getExtras().getString("start_lon");
@@ -173,14 +206,19 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         start_point = new TMapPoint(Double.parseDouble(start_lat),Double.parseDouble(start_lon));
         dest_point = new TMapPoint(Double.parseDouble(dest_lat),Double.parseDouble(dest_lon));
 
-        routename = (TextView) findViewById(R.id.routeshow);
+        startname = (TextView) findViewById(R.id.startname);
+        destname = (TextView) findViewById(R.id.destname);
+        showdistance = (TextView) findViewById(R.id.showdistance);
+        showtime = (TextView) findViewById(R.id.showtime);
 
         start_add = intent.getExtras().getString("start_address");
         Log.d("mini",start_add);
         dest_add = intent.getExtras().getString("dest_address");
         Log.d("mini",dest_add);
 
-        routename.setText(start_add+"->"+dest_add);
+        startname.setText(start_add);
+        destname.setText(dest_add);
+
 
         //final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view);
 
@@ -189,8 +227,6 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         //search = (Button) findViewById(R.id.search_button);
         //route = (Button) findViewById(R.id.route);
 
-        mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        tmapview = (TMapView) findViewById(R.id.map_view2);
         guide = (Button) findViewById(R.id.guide);
         guide.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -221,25 +257,8 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                 },250);
             }
         });
-        tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
-            @Override
-            public void SKPMapApikeySucceed() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setupMap();
-                        showRoute();
-                    }
-                });
-            }
 
-            @Override
-            public void SKPMapApikeyFailed(String s) {
-
-            }
-        });
-        /*tmapview.setSKPMapApiKey(mApiKey);
-        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
+        /*tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
         tmapview.setCompassMode(true);
         tmapview.setIconVisibility(true);
         tmapview.setZoomLevel(15);
@@ -255,9 +274,9 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         tmapgps.OpenGps();*/
 
 
+
         //Log.i("hhr", String.valueOf(tmapview.getLatitude()));
 
-        //showRoute();
 
         /*final Handler handler = new Handler(Looper.getMainLooper()){
             public void handleMessage(Message msg){
@@ -265,9 +284,35 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
             }
         };*/
 
-
         //Log.i("tkdlwm:",String.valueOf(size));
         //Log.i("ghkrdls:",saveDescription.get(0));
+        showRoute();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("minigg", String.valueOf(Ddistance));
+                speed = 15000.0/3600.0;
+                time = Ddistance/speed;
+
+                hour = (int)(Math.round(time)/3600.0);
+                minute = (int)(Math.round(time)%3600.0/60.0);
+                km = (int)(Math.round(Ddistance)/1000.0);
+                m = (int)(Math.round(Ddistance)%1000.0/100.0);
+
+                if(hour==0)
+                    lefttime = minute + "분";
+                else
+                    lefttime = hour + "시간 " + minute + "분";
+                if(km==0)
+                    leftdistance = m*100 + "m";
+                else
+                    leftdistance = km + "." + m + "km";
+
+                showdistance.setText(leftdistance);
+                showtime.setText(lefttime);
+            }
+        }, 500);
 
         /*route.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -304,6 +349,8 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                 Log.d("minig", String.valueOf(Ddistance));
                 tmapview.addTMapPath(tMapPolyLine);
                 tmapview.setTrackingMode(true);
+
+                //tmapview.setTMapPoint(start_point.getLatitude(),start_point.getLongitude());
             }
         });
 
@@ -335,6 +382,7 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
             String proy = "";
             String temp = "";
             String result2 = "";
+            Double linestring=0.0;
             Double dx=0.0;
             Double dy=0.0;
             double coorx;
@@ -450,6 +498,12 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
                     }
 
+                    if(pro.equals("LineString")){
+                        linestring = JObject.getJSONObject("properties").getDouble("distance");
+                        Log.i("line:",String.valueOf(linestring));
+                        saveLineString.add(linestring);
+
+                    }
 
                     //proo = subJObject.optString("type");
                     //coorx = ;

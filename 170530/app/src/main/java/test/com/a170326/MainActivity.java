@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     private TMapGpsManager tmapgps = null;
     private TMapData Tmapdata = new TMapData();
-    TMapView tmapview=null;
+    TMapView tmapview;
     LocationManager mLM;
     public static double Ddistance;
     String Distance;
@@ -196,8 +196,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
             }
         });
-        /*tmapview.setSKPMapApiKey(mApiKey);
-        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
+        tmapview.setSKPMapApiKey(mApiKey);
+        /*tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
 
         tmapview = new TMapView(this);
         linearLayout.addView(tmapview);
