@@ -210,12 +210,13 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
                 mContext.startActivity(intentTonavi);
             }
         });
-        /*tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
+        tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
             @Override
             public void SKPMapApikeySucceed() {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        setupMap();
                         showRoute();
                     }
                 });
@@ -225,8 +226,8 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
             public void SKPMapApikeyFailed(String s) {
 
             }
-        });*/
-        tmapview.setSKPMapApiKey(mApiKey);
+        });
+        /*tmapview.setSKPMapApiKey(mApiKey);
         tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
         tmapview.setCompassMode(true);
         tmapview.setIconVisibility(true);
@@ -240,12 +241,12 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
         tmapgps.setMinDistance(5);
         tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
         //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
-        tmapgps.OpenGps();
+        tmapgps.OpenGps();*/
 
 
         //Log.i("hhr", String.valueOf(tmapview.getLatitude()));
 
-        showRoute();
+        //showRoute();
 
         /*final Handler handler = new Handler(Looper.getMainLooper()){
             public void handleMessage(Message msg){
@@ -540,9 +541,10 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
 
     boolean isInitialized = false;
 
-    /*private void setupMap() {
+    private void setupMap() {
         isInitialized = true;
         tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
+        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
         tmapview.setCompassMode(true);
         tmapview.setIconVisibility(true);
         tmapview.setZoomLevel(15);
@@ -564,7 +566,8 @@ public class RouteActivity extends AppCompatActivity implements TMapGpsManager.o
             setMyLocation(cacheLocation.getLatitude(), cacheLocation.getLongitude());
         }
 
-    }*/
+    }
+
     public void start() {
         httpclient = new DefaultHttpClient();
         /***  time out  ***/

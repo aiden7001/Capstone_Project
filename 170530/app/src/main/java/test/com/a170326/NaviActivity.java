@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,6 +68,9 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     HttpPost httppost;
     private JSONArray countriesArray;
     private JSONArray countries;
+    ArrayList<MapPoint> list;
+    ArrayList<String> turn_list;
+    ArrayList<String> desc_list;
 
     public static Context mContext = null;
     private boolean m_bTrackingMode = true;
@@ -84,14 +88,19 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private TextView showdistance;
     private TextToSpeech myTTS;
     private TextView currenttime;
-    private TextView currentspeed;
+    private ImageView arrow;
+    //private TextView currentspeed;
 
     Double time;
     Double distance;
     int hour,minute;
     int km,m;
+    int point_index = 0;
+    int compare;
     Double speed;
     double myspeed;
+    String lefttime;
+    String leftdistance;
 
     long now = System.currentTimeMillis();
 
@@ -99,6 +108,25 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public void onLocationChange(Location location) {
         sta_lon = String.valueOf(info_gps.getLongitude());
         sta_lat = String.valueOf(info_gps.getLatitude());
+        URI_RECEIVE_DISTANCE_INFO = make_url(String.valueOf(info_gps.getLongitude()), String.valueOf(info_gps.getLatitude()),String.valueOf(list.get(point_index).getLongitude()),String.valueOf(list.get(point_index).getLongitude()));
+
+        compare = Integer.parseInt(url_connetion(URI_RECEIVE_DISTANCE_INFO));
+        if(compare<=80){
+            myTTS.speak(desc_list.get(point_index), TextToSpeech.QUEUE_ADD, null);
+            if (turn_list.get(point_index).equals("11")){
+                arrow.setImageDrawable(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.upward));
+            }
+            else if(turn_list.get(point_index).equals("12")){
+                arrow.setImageDrawable(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.back));
+            }
+            else if(turn_list.get(point_index).equals("13")){
+                arrow.setImageDrawable(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.forward));
+            }
+            else {
+                arrow.setImageDrawable(ContextCompat.getDrawable(RouteActivity.mContext,R.drawable.forward));
+            }
+            point_index++;
+        }
 
     }
 
@@ -127,7 +155,13 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         dest_lat = naviTointent.getExtras().getString("dest_lat");
         dest_lon = naviTointent.getExtras().getString("dest_lon");
         dest_add = naviTointent.getExtras().getString("dest_address");
+        list = (ArrayList<MapPoint>) getIntent().getSerializableExtra("list");
+        turn_list = (ArrayList<String>) getIntent().getSerializableExtra("turn_list");
+        desc_list = (ArrayList<String>) getIntent().getSerializableExtra("desc_list");
 
+        Log.i("tkdlwm:",String.valueOf(list.size()));
+        Log.i("tkdlwm2:",String.valueOf(turn_list.size()));
+        Log.i("tkdlwm3:",String.valueOf(desc_list.size()));
 
         //time = naviTointent.getExtras().getDouble("totalTime");
         distance = naviTointent.getExtras().getDouble("totalDistance");
@@ -145,7 +179,16 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         showtime = (TextView) findViewById(R.id.totaltime);
         showdistance = (TextView) findViewById(R.id.totaldistance);
         currenttime = (TextView) findViewById(R.id.time);
-        currentspeed = (TextView) findViewById(R.id.velocity);
+        //currentspeed = (TextView) findViewById(R.id.velocity);
+
+        if(hour==0)
+            lefttime = minute + "분";
+        else
+            lefttime = hour + "시간 " + minute + "분";
+        if(km==0)
+            leftdistance = m*100 + "m";
+        else
+            leftdistance = km + "." + m + "km";
 
         Log.i("whkvy1",dest_lat);
         Log.i("whkvy2",dest_lon);
@@ -155,8 +198,8 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         //URI_RECEIVE_DISTANCE_INFO = "https://apis.skplanetx.com/tmap/routes/distance?startX="+String.valueOf(info_gps.getLongitude())+"&startY="+String.valueOf(info_gps.getLatitude())+"&endX="+dest_lon+"&reqCoordType=WGS84GEO&endY="+dest_lat+"&callback=&version=1&format=json&appKey=" + mApiKey;
 
-        showtime.setText(Double.toString(time));
-        showdistance.setText(Double.toString(hour));
+        showtime.setText(lefttime);
+        showdistance.setText(leftdistance);
         currenttime.setText(formatDate);
         //currentspeed.setText((int) myspeed);
         Log.d("minig", String.valueOf(hour));
@@ -164,8 +207,8 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Log.d("minig", String.valueOf(km));
         Log.d("minig", String.valueOf(m));
 
-        URI_RECEIVE_DISTANCE_INFO = make_url(String.valueOf(info_gps.getLongitude()), String.valueOf(info_gps.getLatitude()),dest_lon,dest_lat);
-        url_connetion(URI_RECEIVE_DISTANCE_INFO);
+        //URI_RECEIVE_DISTANCE_INFO = make_url(String.valueOf(info_gps.getLongitude()), String.valueOf(info_gps.getLatitude()),dest_lon,dest_lat);
+        //url_connetion(URI_RECEIVE_DISTANCE_INFO);
 
     }
 
@@ -175,7 +218,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         return url;
     }
 
-    public void url_connetion(String input_url){
+    public String url_connetion(String input_url){
 
         try
         {
@@ -211,6 +254,8 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
             Log.e("error", "I/O exception");
             e.printStackTrace();
         }
+
+        return d_distance;
 
     }
 

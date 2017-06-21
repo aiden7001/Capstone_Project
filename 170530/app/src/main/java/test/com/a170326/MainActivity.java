@@ -178,15 +178,15 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         search = (Button) findViewById(R.id.search_button);
         route = (Button) findViewById(R.id.route);
 
-        //mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         tmapview = new TMapView(this);
-        /*tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
+        tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
             @Override
             public void SKPMapApikeySucceed() {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //setupMap();
+                        setupMap();
                     }
                 });
             }
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             public void SKPMapApikeyFailed(String s) {
 
             }
-        });*/
+        });
         tmapview.setSKPMapApiKey(mApiKey);
         tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
 
@@ -522,7 +522,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         id++;
     }
 
-    int id = 0;
+    int id = 0;*/
 
     boolean isInitialized = false;
 
@@ -612,7 +612,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         public void onProviderDisabled(String s) {
 
         }
-    };*/
+    };
 }
 
 
