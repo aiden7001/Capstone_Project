@@ -3,10 +3,12 @@ package test.com.a170326;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -17,8 +19,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.skp.Tmap.TMapCircle;
+import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
 import com.skp.Tmap.TMapPoint;
+import com.skp.Tmap.TMapPolyLine;
+import com.skp.Tmap.TMapView;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -48,6 +54,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,6 +71,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     private static String mApiKey = "759b5f01-999a-3cb1-a9ed-f05e2f121476";
     public String URI_RECEIVE_DISTANCE_INFO;
+    public String URI_RECEIVE_ACCIDENT_INFO;
 
     public static HttpClient httpclient;
     HttpPost httppost;
@@ -77,7 +85,10 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     public static Context mContext = null;
     private boolean m_bTrackingMode = true;
     private TMapGpsManager tmapgps = null;
+    TMapView tmapview;
     GpsInfo info_gps;
+    private TMapData Tmapdata = new TMapData();
+    TMapPoint dangerous;
 
     String dest_lat;
     String dest_lon;
@@ -97,18 +108,25 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     Double time;
     Double distance;
     Double fdistance;
-    Double ddistance = 0.0;
+    Double ddistance=0.0;
     int hour,minute;
     int km,m;
-    int point_index = 0;
+    int point_index = 1;
     int entrance = 0;
     int compare;
+    int acci;
     Double speed;
     double myspeed;
     String lefttime;
     String leftdistance;
+    String s;
+    String accident;
+    LocationManager mLM;
+    String mProvider = LocationManager.NETWORK_PROVIDER;
 
     long now = System.currentTimeMillis();
+    DecimalFormat df;
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -117,53 +135,93 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @Override
     public void onLocationChange(Location location) {
-        sta_lon = String.valueOf(info_gps.getLongitude());
-        sta_lat = String.valueOf(info_gps.getLatitude());
 
-        URI_RECEIVE_DISTANCE_INFO = make_url(String.valueOf(info_gps.getLongitude()), String.valueOf(info_gps.getLatitude()),String.valueOf(list.get(point_index).getLongitude()),String.valueOf(list.get(point_index).getLongitude()));
+        if (m_bTrackingMode) {
+            tmapview.setLocationPoint(location.getLongitude(), location.getLatitude());
+        }
+
+        //sta_lon = String.valueOf(info_gps.getLongitude());
+        //sta_lat = String.valueOf(info_gps.getLatitude());
+
+        URI_RECEIVE_DISTANCE_INFO = make_url(String.valueOf(format(location.getLongitude())), String.valueOf(format(location.getLatitude())),String.valueOf(format(list.get(point_index).getLongitude())),String.valueOf(format(list.get(point_index).getLatitude())));
+        URI_RECEIVE_ACCIDENT_INFO = make_url(String.valueOf(format(location.getLongitude())), String.valueOf(format(location.getLatitude())),String.valueOf(format(dangerous.getLongitude())),String.valueOf(format(dangerous.getLatitude())));
+        Log.i("url:",String.valueOf(format(info_gps.getLongitude())));
+        Log.i("url2:",String.valueOf(format(list.get(point_index).getLongitude())));
+
         try{
-            compare = Integer.parseInt(url_connetion(URI_RECEIVE_DISTANCE_INFO));
+
+            s = url_connetion(URI_RECEIVE_DISTANCE_INFO);
+            accident = url_connetion(URI_RECEIVE_ACCIDENT_INFO);
+            Log.i("compare1:",s);
+
+            compare = Integer.parseInt(s);
+            acci = Integer.parseInt(accident);
         } catch (NumberFormatException e){
             e.printStackTrace();
         } catch (RuntimeException e){
             e.printStackTrace();
         }
+
         Log.i("compare:",String.valueOf(compare));
         fdistance = distance - (line_list.get(point_index) - compare) - ddistance;
         //leftdistance = String.valueOf(fdistance);
 
-        marker_distance.setText(String.valueOf(compare));
+        marker_distance.setText(String.valueOf(compare)+"m 후");
 
-        if(entrance == 0){
-
-            if(compare<=10){
+        if(compare<=50){
+            if (entrance == 0){
                 myTTS.speak(desc_list.get(point_index), TextToSpeech.QUEUE_ADD, null);
                 if (turn_list.get(point_index).equals("11")){
                     arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.upward));
+                    entrance = 1;
                 }
                 else if(turn_list.get(point_index).equals("12")){
                     arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.back));
+                    entrance = 1;
                 }
                 else if(turn_list.get(point_index).equals("13")){
                     arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.forward));
+                    entrance = 1;
                 }
                 else {
                     arrow.setImageDrawable(ContextCompat.getDrawable(NaviActivity.mContext,R.drawable.forward));
+                    entrance = 1;
                 }
 
+
             }
-
-            entrance = 1;
-
         }
 
-        if (compare <= 1){
+        if (compare <= 7){
 
             for(int i=0; i<(point_index-1); i++){
                 ddistance = ddistance+line_list.get(i);
             }
             point_index++;
             entrance = 0;
+
+        }
+        time = fdistance/speed;
+        hour = (int)(Math.round(time)/3600.0);
+        minute = (int)(Math.round(time)%3600.0/60.0);
+        km = (int)(Math.round(fdistance)/1000.0);
+        m = (int)(Math.round(fdistance)%1000.0/100.0);
+
+        if(hour==0)
+            lefttime = minute + "분";
+        else
+            lefttime = hour + "시간 " + minute + "분";
+        if(km==0)
+            leftdistance = m*100 + "m";
+        else
+            leftdistance = km + "." + m + "km";
+
+        showtime.setText(lefttime);
+        showdistance.setText(leftdistance);
+
+        if (acci <= 30){
+            myTTS.speak("전방 삼십 미터 앞 사고다발지역입니다", TextToSpeech.QUEUE_ADD, null);
+            currenttime.setText("사고 다발 지역 근방");
 
         }
 
@@ -174,12 +232,14 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navi);
 
-        myTTS = new TextToSpeech(this, this);
-        Date date = new Date(now);
-        SimpleDateFormat sdfNow = new SimpleDateFormat("HH:mm:ss", Locale.KOREA);
-        String formatDate = sdfNow.format(date);
-        arrow = (ImageView)findViewById(R.id.arrow);
-        marker_distance = (TextView)findViewById(R.id.direct_info);
+        tmapview = (TMapView) findViewById(R.id.map_view3);
+
+        tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
+        tmapview.setCompassMode(true);
+        tmapview.setIconVisibility(true);
+        tmapview.setZoomLevel(15);
+        tmapview.setTrackingMode(true);
+        tmapview.setSightVisible(true);
 
         tmapgps = new TMapGpsManager(NaviActivity.this);
         tmapgps.setMinTime(1000);
@@ -187,6 +247,33 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
         //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
         tmapgps.OpenGps();
+        tmapview.setSKPMapApiKey(mApiKey);
+
+        dangerous = new TMapPoint(37.558235,127.000176);
+
+        TMapCircle tcircle = new TMapCircle();
+        tcircle.setCenterPoint(dangerous);
+        tcircle.setRadius(3);
+        tcircle.setLineColor(Color.RED);
+        tcircle.setAreaColor(Color.RED);
+        tcircle.setCircleWidth(2);
+        tcircle.setRadiusVisible(true);
+        tmapview.addTMapCircle("dan",tcircle);
+
+        myTTS = new TextToSpeech(this, this);
+        Date date = new Date(now);
+        SimpleDateFormat sdfNow = new SimpleDateFormat("HH:mm:ss", Locale.KOREA);
+        String formatDate = sdfNow.format(date);
+        arrow = (ImageView)findViewById(R.id.arrow);
+        marker_distance = (TextView)findViewById(R.id.direct_info);
+        df = new DecimalFormat("0.000000");
+
+        //tmapgps = new TMapGpsManager(NaviActivity.this);
+        //tmapgps.setMinTime(1000);
+        //tmapgps.setMinDistance(5);
+        //tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
+        //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
+        //tmapgps.OpenGps();
 
         info_gps = new GpsInfo(NaviActivity.this);
 
@@ -205,6 +292,23 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Log.i("tkdlwm2:",String.valueOf(turn_list.size()));
         Log.i("tkdlwm3:",String.valueOf(desc_list.size()));
         Log.i("tkdlwm4:",String.valueOf(line_list.size()));
+
+        TMapPoint dest_point = new TMapPoint(Double.parseDouble(dest_lat),Double.parseDouble(dest_lon));
+        TMapPoint start_point = new TMapPoint(list.get(0).getLatitude(),list.get(0).getLongitude());
+
+        Tmapdata.findPathData(start_point, dest_point, new TMapData.FindPathDataListenerCallback() {
+            @Override
+            public void onFindPathData(TMapPolyLine tMapPolyLine) {
+                tmapview.removeAllMarkerItem();
+                tMapPolyLine.setLineColor(Color.BLUE);
+                tMapPolyLine.setLineWidth(10);
+                tMapPolyLine.setID("path");
+                //saveRouteTurn = tMapPolyLine.getPassPoint();
+                tmapview.addTMapPath(tMapPolyLine);
+                tmapview.setTrackingMode(true);
+                //tmapview.setTMapPoint(start_point.getLatitude(),start_point.getLongitude());
+            }
+        });
 
         //time = naviTointent.getExtras().getDouble("totalTime");
         distance = naviTointent.getExtras().getDouble("totalDistance");
@@ -242,9 +346,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         //URI_RECEIVE_DISTANCE_INFO = "https://apis.skplanetx.com/tmap/routes/distance?startX="+String.valueOf(info_gps.getLongitude())+"&startY="+String.valueOf(info_gps.getLatitude())+"&endX="+dest_lon+"&reqCoordType=WGS84GEO&endY="+dest_lat+"&callback=&version=1&format=json&appKey=" + mApiKey;
 
-        showtime.setText(lefttime);
-        showdistance.setText(leftdistance);
-        currenttime.setText(formatDate);
+        //currenttime.setText(formatDate);
         //currentspeed.setText((int) myspeed);
         Log.d("minig", String.valueOf(hour));
         Log.d("minig", String.valueOf(minute));
@@ -284,6 +386,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     Log.i("strr1:",root.getString("distanceInfo"));
                     Log.i("strr2:",root.getJSONObject("distanceInfo").getString("distance"));
                     d_distance = root.getJSONObject("distanceInfo").getString("distance");
+                    Log.i("strr3:",d_distance);
 
                 }catch (JSONException e){
                     Log.e("error", "JSONException");
@@ -349,7 +452,7 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if(km==0)
             myText2 = "목적지까지의 거리는 " + m*100 + "미터";
         else
-            myText2 = "목적지까지의 거리는 " + km + "점" + m + "킬로미터";
+            myText2 = "목적지까지의 거리는 " + km + "쩜" + m + "킬로미터";
         myTTS.speak(myText1, TextToSpeech.QUEUE_FLUSH, null);
         myTTS.speak(myText2, TextToSpeech.QUEUE_ADD, null);
         myTTS.speak(myText3, TextToSpeech.QUEUE_ADD, null);
@@ -366,4 +469,10 @@ public class NaviActivity extends AppCompatActivity implements TextToSpeech.OnIn
     protected void onResume() {
         super.onResume();
     }
+
+    public String format(double number){
+        return df.format(number);
+    }
+
+
 }

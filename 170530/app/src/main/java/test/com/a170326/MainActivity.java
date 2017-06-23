@@ -538,6 +538,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tmapgps = new TMapGpsManager(MainActivity.this);
         tmapgps.setMinTime(1000);
         tmapgps.setMinDistance(5);
+
+
         tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
         //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
         tmapgps.OpenGps();

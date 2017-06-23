@@ -46,7 +46,7 @@ public class FirstActivity extends AppCompatActivity {
         setting = (Button) findViewById(R.id.setting);
         showmap = (Button) findViewById(R.id.map);
         mode = (ToggleButton) findViewById(R.id.bicyclemode);
-        state = (TextView) findViewById(R.id.showstate);
+        //state = (TextView) findViewById(R.id.showstate);
 
 
         findroute.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +86,7 @@ public class FirstActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(mode.isChecked()){
-                    Toast.makeText(FirstActivity.this, R.string.parking_off, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FirstActivity.this, R.string.parking_on, Toast.LENGTH_SHORT).show();
                     ControlRequest req = new ControlRequest("dongguk-capstone", "parking_mode", "1");
                     req.start();
                     RetrieveRequestCon rew = new RetrieveRequestCon("dongguk-capstone","parking_state");

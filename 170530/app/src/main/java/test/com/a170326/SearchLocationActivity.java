@@ -100,7 +100,7 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
         tmapgps2.setMinTime(1000);
         tmapgps2.setMinDistance(5);
         tmapgps2.setProvider(tmapgps2.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
-        //tmapgps.setProvider(tmapgps2.GPS_PROVIDER);     //GPS로 위치 파악
+        //tmapgps2.setProvider(tmapgps2.GPS_PROVIDER);     //GPS로 위치 파악
         tmapgps2.OpenGps();
         //start_dot = tmapgps2.getLocation();
 
