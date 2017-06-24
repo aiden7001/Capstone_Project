@@ -3,6 +3,7 @@ import sys
 import socket
 import time
 import threading
+import RPi.GPIO as gpio
 
 import bluetooth._bluetooth as bluez
 
@@ -20,6 +21,7 @@ HOST = '192.168.1.2'
 PORT = 7622
 
 
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST,PORT))
 s_1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -27,6 +29,10 @@ s_1.connect((HOST,PORT))
 
 
 s.sendall('{"ctname":"parking_mode", "con":""}')
+
+gpio.setmode(gpio.BCM)
+gpio.setup(26, gpio.OUT) # buzzor
+gpio.output(26, False)
 
 try:
 	sock = bluez.hci_open_dev(dev_id)
@@ -180,12 +186,16 @@ class BeaconFinder(threading.Thread):
                                                 f2_distance = 100.0
                                                 
                                         else:
-                                                if abs(distance_1 - f1_distance) > 0.5:
+                                                if abs(distance_1 - f1_distance) > 0.3:
                                                         if beacon_1_lost > 1:
                                                                 if transferred_info != "stolen":
                                                                         s_1.sendall('{"ctname":"parking_state", "con":"stolen"}')
                                                                         transferred_info = "stolen"
-                                                                        print "stolen"
+                                                                gpio.output(26, True)
+                                                                time.sleep(0.3)
+                                                                gpio.output(26, False)
+                                                                time.sleep(0.2)
+                                                                print "stolen"
                                                         else:
                                                                 beacon_1_lost = beacon_1_lost + 1
                                                 else:
@@ -216,7 +226,11 @@ class BeaconFinder(threading.Thread):
                                                                 if transferred_info != "stolen":
                                                                         s_1.sendall('{"ctname":"parking_state", "con":"stolen"}')
                                                                         transferred_info = "stolen"
-                                                                        print "stolen"
+                                                                gpio.output(26, True)
+                                                                time.sleep(0.3)
+                                                                gpio.output(26, False)
+                                                                time.sleep(0.2)
+                                                                print "stolen"
                                                         else:
                                                                 beacon_2_lost = beacon_2_lost + 1
                                                 else:
