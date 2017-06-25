@@ -15,8 +15,6 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 
-import com.skp.Tmap.TMapGpsManager;
-
 /**
  * Created by ksm95 on 2017-05-06.
  */
@@ -108,18 +106,14 @@ public class GpsInfo extends Service implements LocationListener{
         return location;
     }
 
-    /**
-     * GPS 종료
-     * */
+    //GPS 종료
     public void stopUsingGPS(){
         if(locationManager != null){
             locationManager.removeUpdates((LocationListener) GpsInfo.this);
         }
     }
 
-    /**
-     * 위도값을 가져옵니다.
-     * */
+    //위도값을 가져온다
     public double getLatitude(){
         if(location != null){
             lat = location.getLatitude();
@@ -127,9 +121,7 @@ public class GpsInfo extends Service implements LocationListener{
         return lat;
     }
 
-    /**
-     * 경도값을 가져옵니다.
-     * */
+    //경도값을 가져온다
     public double getLongitude(){
         if(location != null){
             lon = location.getLongitude();
@@ -137,32 +129,27 @@ public class GpsInfo extends Service implements LocationListener{
         return lon;
     }
 
-    /**
-     * GPS 나 wife 정보가 켜져있는지 확인합니다.
-     * */
+    //GPS 나 wife 정보가 켜져있는지 확인
     public boolean isGetLocation() {
         return this.isGetLocation;
     }
 
-    /**
-     * GPS 정보를 가져오지 못했을때
-     * 설정값으로 갈지 물어보는 alert 창
-     * */
+    //GPS 정보를 가져오지 못했을때 설정값으로 갈지 물어보는 alert 창
     public void showSettingsAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
         alertDialog.setTitle("GPS 사용유무셋팅");
         alertDialog.setMessage("GPS 셋팅이 되지 않았을수도 있습니다.\n 설정창으로 가시겠습니까?");
 
-                // OK 를 누르게 되면 설정창으로 이동합니다.
-                alertDialog.setPositiveButton("Settings",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int which) {
-                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                mContext.startActivity(intent);
-                            }
-                        });
-        // Cancle 하면 종료 합니다.
+        // OK 를 누르게 되면 설정창으로 이동
+        alertDialog.setPositiveButton("Settings",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int which) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        mContext.startActivity(intent);
+                    }
+                });
+        // Cancle 하면 종료
         alertDialog.setNegativeButton("Cancel",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -198,5 +185,4 @@ public class GpsInfo extends Service implements LocationListener{
 
     }
 }
-
 

@@ -45,8 +45,7 @@ import java.util.List;
  */
 
 public class SplashActivity extends AppCompatActivity {
-    //private GifImageView gifImageView;
-    //private ProgressBar progressBar;
+
     private static String taasKey = "0NhsehhJAtunv%2BdlkgySNms8ZLzhBnAr1n43Cj76AQLZNNQdu5r4JAkT7pLjTD4D";
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
@@ -74,18 +73,13 @@ public class SplashActivity extends AppCompatActivity {
             //[웹문서 소스를 버퍼에 저장]
             //데이터를 버퍼에 기록
 
-            //buf = new BufferedInputStream(urlConnection.getInputStream());
-            //BufferedReader bufreader = new BufferedReader(new InputStreamReader(buf,"UTF-8"));
-
             BufferedReader bufreader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(),"UTF-8"));
-            //Log.d("line:",bufreader.toString());
 
             String line = null;
             String page = "";
 
             //버퍼의 웹문서 소스를 줄단위로 읽어(line), Page에 저장함
             while((line = bufreader.readLine())!=null){
-                //Log.d("line:",line);
                 page+=line;
             }
 
@@ -117,9 +111,6 @@ public class SplashActivity extends AppCompatActivity {
 
             }
 
-
-
-
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -127,20 +118,6 @@ public class SplashActivity extends AppCompatActivity {
             //URL 연결 해제
             urlConnection.disconnect();
         }
-
-        /*gifImageView = (GifImageView)findViewById(R.id.gifImageView);
-        progressBar = (ProgressBar)findViewById(R.id.progressBar);
-        progressBar.setVisibility(progressBar.VISIBLE);
-
-        //Set GIFImageView resource
-        try{
-            InputStream inputStream = getAssets().open("giphy (2).gif");
-            byte[] bytes = IOUtils.toByteArray(inputStream);
-            gifImageView.setBytes(bytes);
-            gifImageView.startAnimation();
-        }catch (IOException ex){
-
-        }*/
 
         //Wait for 3 seconds and start MainActivity
         new Handler().postDelayed(new Runnable() {

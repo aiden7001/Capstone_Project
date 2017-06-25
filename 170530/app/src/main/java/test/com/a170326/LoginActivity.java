@@ -22,9 +22,6 @@ public class LoginActivity extends AppCompatActivity {
     private TextView login2;
     final Context context = this;
 
-    //private Button google;
-    //private Button facebook;
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -33,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
         register = (TextView) findViewById(R.id.registerButton);
         login2 = (TextView)findViewById(R.id.otherLogin);
 
+        //로그인 버튼 클릭시 first activity로 이동
         login.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -41,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //회원등록 버튼 클릭시 singup activity 실행
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //다른 방법으로 로그인
         login2.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -59,13 +59,13 @@ public class LoginActivity extends AppCompatActivity {
                 alertDialogBuilder.setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                                // 프로그램을 종료한다
-                                Toast.makeText(getApplicationContext(),
-                                        items[id] + " 선택했습니다.",
-                                        Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
-                            }
-                        });
+                        // 프로그램을 종료한다
+                        Toast.makeText(getApplicationContext(),
+                                items[id] + " 선택했습니다.",
+                                Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                });
 
 // 다이얼로그 생성
                 AlertDialog alertDialog = alertDialogBuilder.create();

@@ -1,8 +1,5 @@
 package test.com.a170326;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 
 /**

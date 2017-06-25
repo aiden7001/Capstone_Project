@@ -4,46 +4,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SlidingDrawer;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.firebase.database.Transaction;
-import com.skp.Tmap.TMapAddressInfo;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
-import com.skp.Tmap.TMapInfo;
+
 import com.skp.Tmap.TMapMarkerItem;
-import com.skp.Tmap.TMapOverlayItem;
-import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
@@ -52,57 +33,39 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.LogRecord;
 
 public class RouteActivity extends AppCompatActivity {
 
     public static Context mContext = null;
-    private boolean m_bTrackingMode = true;
 
     private TMapGpsManager tmapgps = null;
     private TMapData Tmapdata = new TMapData();
     TMapView tmapview;
     LocationManager mLM;
-    String Distance;
     String mProvider = LocationManager.NETWORK_PROVIDER;
     private static String mApiKey = "759b5f01-999a-3cb1-a9ed-f05e2f121476";
 
-    private Button search;
-    private Button route;
-    private Button btnShowLocation;
     private Button guide;
     ListView listView;
 
-    private GpsInfo gps;
-
-    String input_start;
-    String input_dest;
     private TextView startname;
     private TextView destname;
-    private TextView showdistance;
-    private TextView showtime;
+    private TextView showdistance; //총거리
+    private TextView showtime; //예상 소요 시간
     TMapPoint start_point = null;
     TMapPoint dest_point = null;
     String dest_lat;
@@ -114,6 +77,7 @@ public class RouteActivity extends AppCompatActivity {
     String start_add;
     String dest_add;
 
+    //시간, 거리 계산하기 위한 변수 선언
     Double Ddistance;
     Double time;
     Double speed;
@@ -124,24 +88,15 @@ public class RouteActivity extends AppCompatActivity {
 
     Intent intentTonavi;
 
-    TMapAddressInfo addressInfoSave = new TMapAddressInfo();
-
     ArrayList<String> saveDescription = new ArrayList<String>();
     ArrayList<String> saveTurn = new ArrayList<String>();
     ArrayList<Double> saveLineString = new ArrayList<Double>();
     ArrayList<MapPoint> saveRoutePoint = new ArrayList<MapPoint>();
-    ArrayList<TMapPoint> saveRouteTurnPoint = new ArrayList<TMapPoint>();
-    ArrayList<TMapPoint> saveRouteTurn = new ArrayList<TMapPoint>();
-    //private ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
-
-    public String received_user_name[] = new String[100];
-    public String received_user_email[] = new String[100];
 
     /***
      * HTTP CLIENT
@@ -150,14 +105,6 @@ public class RouteActivity extends AppCompatActivity {
     public static HttpClient httpclient;
     HttpPost httppost;
     private JSONArray countriesArray;
-    private JSONArray countries;
-
-    /*@Override
-    public void onLocationChange(Location location) {
-        if (m_bTrackingMode) {
-            tmapview.setLocationPoint(location.getLongitude(), location.getLatitude());
-        }
-    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,9 +120,8 @@ public class RouteActivity extends AppCompatActivity {
         tmapview = (TMapView) findViewById(R.id.map_view2);
 
 
-        //showRoute();
-
         mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //API키가 확인되었을 때 지도 출력
         tmapview.setOnApiKeyListener(new TMapView.OnApiKeyListenerCallback() {
             @Override
             public void SKPMapApikeySucceed() {
@@ -183,7 +129,6 @@ public class RouteActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         setupMap();
-                        //showRoute();
                     }
                 });
             }
@@ -194,8 +139,8 @@ public class RouteActivity extends AppCompatActivity {
             }
         });
         tmapview.setSKPMapApiKey(mApiKey);
-        //showRoute();
 
+        //MainActivity에서 intent로 값 받아오기
         Intent intent = getIntent();
         start_lat= intent.getExtras().getString("start_lat");
         start_lon= intent.getExtras().getString("start_lon");
@@ -209,42 +154,20 @@ public class RouteActivity extends AppCompatActivity {
         showdistance = (TextView) findViewById(R.id.showdistance);
         showtime = (TextView) findViewById(R.id.showtime);
 
-        start_add = intent.getExtras().getString("start_address");
+        start_add = intent.getExtras().getString("start_address"); //출발지 주소
         Log.d("mini",start_add);
-        dest_add = intent.getExtras().getString("dest_address");
+        dest_add = intent.getExtras().getString("dest_address"); //도착지 주소
         Log.d("mini",dest_add);
 
         startname.setText(start_add);
         destname.setText(dest_add);
 
 
-        //final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view);
-
-        //input_start = (EditText) findViewById(R.id.search_sta);
-        //input_dest = (EditText) findViewById(R.id.search_dest);
-        //search = (Button) findViewById(R.id.search_button);
-        //route = (Button) findViewById(R.id.route);
-
         guide = (Button) findViewById(R.id.guide);
+        //길안내 시작시 navi activity로 값 전달
         guide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //intent.putExtra("start_address",start_add);
-                //Log.d("mini2", String.valueOf(input_start));
-                //intentTonavi.putExtra("totalTime",ttime);
-                //intent.putExtra("dest_lat",String.valueOf(dest_point.getLatitude()));
-                //intent.putExtra("dest_lon",String.valueOf(dest_point.getLongitude()));
-                /*intentTonavi.putExtra("dest_address", dest_add);
-                //Log.d("mini2", String.valueOf(input_dest));
-                intentTonavi.putExtra("dest_lat",dest_lat);
-                intentTonavi.putExtra("dest_lon",dest_lon);
-                intentTonavi.putExtra("totalDistance",Ddistance);
-
-                intentTonavi.putExtra("list",saveRoutePoint);
-                intentTonavi.putExtra("turn_list",saveTurn);
-                intentTonavi.putExtra("desc_list",saveDescription);
-                mContext.startActivity(intentTonavi);*/
 
                 Handler handler1 = new Handler();
                 handler1.postDelayed(new Runnable() {
@@ -269,41 +192,14 @@ public class RouteActivity extends AppCompatActivity {
             }
         });
 
-        /*tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
-        tmapview.setCompassMode(true);
-        tmapview.setIconVisibility(true);
-        tmapview.setZoomLevel(15);
-        tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
-        tmapview.setTrackingMode(true);
-        tmapview.setSightVisible(true);
+        showRoute(); //출발지부터 목적지까지 길 표시해주는 함수
 
-        tmapgps = new TMapGpsManager(RouteActivity.this);
-        tmapgps.setMinTime(1000);
-        tmapgps.setMinDistance(5);
-        tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
-        //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
-        tmapgps.OpenGps();*/
-
-
-
-        //Log.i("hhr", String.valueOf(tmapview.getLatitude()));
-
-
-        /*final Handler handler = new Handler(Looper.getMainLooper()){
-            public void handleMessage(Message msg){
-                setnavilist();
-            }
-        };*/
-
-        //Log.i("tkdlwm:",String.valueOf(size));
-        //Log.i("ghkrdls:",saveDescription.get(0));
-        showRoute();
-
+        //출발지부터 목적지까지 걸리는 시간과 거리 계산
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 Log.d("minigg", String.valueOf(Ddistance));
-                speed = 15000.0/3600.0;
+                speed = 15000.0/3600.0; //자전거의 평균 속도 계산
                 time = Ddistance/speed;
 
                 hour = (int)(Math.round(time)/3600.0);
@@ -325,29 +221,11 @@ public class RouteActivity extends AppCompatActivity {
             }
         }, 3000);
 
-        /*route.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Send_Login_Info(String.valueOf(start_point.getLongitude()), String.valueOf(start_point.getLatitude()), String.valueOf(dest_point.getLongitude()), String.valueOf(dest_point.getLatitude()), "WGS84GEO", "WGS84GEO");
-
-            }
-        });*/
-
     }
 
     public void showRoute(){
-        //Intent intent = getIntent();
-        //String id = intent.getExtras().getString("routename");
-        //TMapPolyLine polyline = tmapview.getPolyLineFromID(id);
-        //tmapview.removeAllMarkerItem();
-        //polyline.setLineColor(Color.BLUE);
-        //polyline.setLineWidth(10);
-        //tMapPolyLine.setID("path");
-        //Ddistance = tMapPolyLine.getDistance();
-        //tmapview.addTMapPath(polyline);
-        //tmapview.setTrackingMode(true);
 
+        //경로 그리기
         Tmapdata.findPathData(start_point, dest_point, new TMapData.FindPathDataListenerCallback() {
             @Override
             public void onFindPathData(TMapPolyLine tMapPolyLine) {
@@ -356,15 +234,14 @@ public class RouteActivity extends AppCompatActivity {
                 tMapPolyLine.setLineWidth(10);
                 tMapPolyLine.setID("path");
                 Ddistance = tMapPolyLine.getDistance();
-                //saveRouteTurn = tMapPolyLine.getPassPoint();
                 Log.d("minig", String.valueOf(Ddistance));
                 tmapview.addTMapPath(tMapPolyLine);
                 tmapview.setTrackingMode(true);
                 setMyLocation(start_point.getLatitude(),start_point.getLongitude());
-                //tmapview.setTMapPoint(start_point.getLatitude(),start_point.getLongitude());
             }
         });
 
+        //url통신으로 설정한 출발지, 목적지의 위도,경도값으로 길찾기
         Send_Login_Info(String.valueOf(start_point.getLongitude()), String.valueOf(start_point.getLatitude()), String.valueOf(dest_point.getLongitude()), String.valueOf(dest_point.getLatitude()), "WGS84GEO", "WGS84GEO");
 
     }
@@ -392,13 +269,9 @@ public class RouteActivity extends AppCompatActivity {
             String prox = "";
             String proy = "";
             String temp = "";
-            String result2 = "";
             Double linestring=0.0;
             Double dx=0.0;
             Double dy=0.0;
-            double coorx;
-            Double time = 0.0;
-            Double distance = 0.0;
 
 
             /*** Add data to send ***/
@@ -451,7 +324,6 @@ public class RouteActivity extends AppCompatActivity {
             try {
                 JSONObject root = new JSONObject(builder.toString());
                 countriesArray = root.getJSONArray("features");
-                //countries = root.getJSONArray("coordinates");// 자료 갯수
 
                        /* -- No data --*/
 
@@ -465,12 +337,7 @@ public class RouteActivity extends AppCompatActivity {
 
                     JSONObject JObject = countriesArray.getJSONObject(i);
 
-                    result = JObject.getString("geometry");
-                    result2 = JObject.getString("properties");
-                    proo = JObject.getJSONObject("properties").getString("description");
-                    //time = JObject.getJSONObject("properties").getDouble("totalTime");
-                    //distance = JObject.getJSONObject("properties").getDouble("totalDistance");
-                    pro = JObject.getJSONObject("geometry").getString("type");
+                    //JSON형식의 경유지들의 위도 경도값 받아오기
                     prox = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(0);
                     proy = JObject.getJSONObject("geometry").getJSONArray("coordinates").getString(1);
 
@@ -483,24 +350,15 @@ public class RouteActivity extends AppCompatActivity {
                         dx = Double.parseDouble(prox);
                         dy = Double.parseDouble(proy);
 
-                        //saveRoutePoint.add(new TMapPoint(dy,dx));
+                        //마커 생성
                         addMarker(dy,dx,proo);
                         showMarker();
-                        //ttime = time;
-                        //tdistance = distance;
-                        //Intent intent = new Intent(mContext, NaviActivity.class);
-                        //intent.putExtra("totalTime", time);
-                        //intent.putExtra("totalDistance",distance);
-
-                        //mContext.startActivity(intent);
-                        //Log.d("minig", String.valueOf(ttime));
-                        //Log.d("minig", String.valueOf(tdistance));
 
                     } catch (NumberFormatException e){
 
                     }
 
-                    if(pro.equals("Point")){
+                    if(pro.equals("Point")){ //방향 종류 가지고 오기(우회전, 좌회전 등)
                         turn = JObject.getJSONObject("properties").getInt("turnType");
                         String navidesc = JObject.getJSONObject("properties").getString("description");
                         Log.i("ghkrdls:",String.valueOf(turn));
@@ -509,19 +367,12 @@ public class RouteActivity extends AppCompatActivity {
 
                     }
 
-                    if(pro.equals("LineString")){
+                    if(pro.equals("LineString")){ //거리값 받아오기
                         linestring = JObject.getJSONObject("properties").getDouble("distance");
                         Log.i("line:",String.valueOf(linestring));
                         saveLineString.add(linestring);
 
                     }
-
-                    //proo = subJObject.optString("type");
-                    //coorx = ;
-
-                    //Log.i("whrcp3:",String.valueOf(i)+proo);
-                    //Log.i("whrcp3:",String.valueOf(i)+turn);
-
                 }
 
 
@@ -551,6 +402,7 @@ public class RouteActivity extends AppCompatActivity {
             listView.setAdapter(adapter);
             adapter.clearItem();
 
+            //방향종류에 따라 화살표 이미지와 남은 거리 값 띄우기
             for(int i=0; i<saveTurn.size(); i++){
                 Log.i("xjs:",String.valueOf(saveTurn.get(i)));
                 if (saveTurn.get(i).equals("11")){
@@ -575,23 +427,7 @@ public class RouteActivity extends AppCompatActivity {
 
     private void addMarker(double lat, double lng, String title) {
         saveRoutePoint.add(new MapPoint(title,lat,lng));
-        /*TMapMarkerItem item = new TMapMarkerItem();
-        TMapPoint point = new TMapPoint(lat, lng);
 
-        //Log.d("mini", String.valueOf(saveRoutePoint.get(1)));
-        item.setTMapPoint(point);
-        //Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_add_marker);
-        //item.setIcon(bitmap);
-        item.setPosition(0.5f, 1);
-        item.setCalloutTitle(title);
-        //item.setCalloutSubTitle("sub " + title);
-        //Bitmap left = ((BitmapDrawable) ContextCompat.getDrawable(this, android.R.drawable.ic_dialog_alert)).getBitmap();
-        //item.setCalloutLeftImage(left);
-        //Bitmap right = ((BitmapDrawable) ContextCompat.getDrawable(this, android.R.drawable.ic_input_get)).getBitmap();
-        //item.setCalloutRightButtonImage(right);
-        item.setCanShowCallout(true);
-        tmapview.addMarkerItem("m" + id, item);
-        id++;*/
     }
 
     public void showMarker() {
@@ -603,7 +439,7 @@ public class RouteActivity extends AppCompatActivity {
             TMapMarkerItem item1 = new TMapMarkerItem();
             Bitmap bitmap = null;
             item1.setTMapPoint(point);
-            //item1.setName(saveRoutePoint.get(i).getName());
+
             item1.setVisible(item1.VISIBLE);
             item1.setCalloutTitle(saveRoutePoint.get(i).getName());
             item1.setCanShowCallout(true);
@@ -617,6 +453,7 @@ public class RouteActivity extends AppCompatActivity {
 
     boolean isInitialized = false;
 
+    //지도 초기 생성 값 지정
     private void setupMap() {
         isInitialized = true;
         tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
@@ -633,10 +470,7 @@ public class RouteActivity extends AppCompatActivity {
         tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
         //tmapgps.setProvider(tmapgps.GPS_PROVIDER);     //GPS로 위치 파악
         tmapgps.OpenGps();
-        //        mapView.setSightVisible(true);
-        //        mapView.setCompassMode(true);
-        //        mapView.setTrafficInfo(true);
-        //        mapView.setTrackingMode(true);
+
         if (cacheLocation != null) {
             moveMap(cacheLocation.getLatitude(), cacheLocation.getLongitude());
             setMyLocation(cacheLocation.getLatitude(), cacheLocation.getLongitude());
@@ -656,6 +490,7 @@ public class RouteActivity extends AppCompatActivity {
 
 
     @Override
+    //activity 시작시 네트워크 연결 확인
     protected void onStart() {
         super.onStart();
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -684,10 +519,8 @@ public class RouteActivity extends AppCompatActivity {
     }
 
     private void setMyLocation(double lat, double lng) {
-        //Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.ic_place);
-        //tmapview.setIcon(bitmap);
         tmapview.setLocationPoint(lng, lat);
-        //tmapview.setIconVisibility(true);
+
     }
 
     LocationListener mListener = new LocationListener() {

@@ -2,10 +2,7 @@ package test.com.a170326;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -15,26 +12,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.os.Handler;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
-import com.skp.Tmap.TMapMarkerItem;
-import com.skp.Tmap.TMapOverlay;
-import com.skp.Tmap.TMapOverlayItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapView;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * Created by Heera on 2017-05-02.
@@ -45,31 +29,22 @@ public class SelectMapLocationActivity extends AppCompatActivity implements TMap
 
     private Context mContext = null;
     private boolean m_bTrackingMode = true;
-    Handler handler = new Handler();
 
     private TMapGpsManager tmapgps = null;
     private TMapData Tmapdata = new TMapData();
     private TMapView tmapview = null;
-    private TMapPoint center_p;
+    private TMapPoint center_p;     // 마커가 위치하는 중앙점
     private static String mApiKey = "759b5f01-999a-3cb1-a9ed-f05e2f121476";
-    private static int mMarkerID;
-    private boolean m_bOverlayMode = false;
-    private ArrayList<Bitmap> mOverlayList;
-    private ImageView ima;
-    private Bitmap bitmap;
-    private TextView txt1;
+
+    private TextView txt1;    // 중앙 좌표가 변함에 따라 그 주소를 표시
     private String address;
     private Button bt1;
     Intent intent_select;
 
-    private ArrayList<TMapPoint> m_tmapPoint = new ArrayList<TMapPoint>();
-    private ArrayList<String> mArrayMarkerID = new ArrayList<String>();
-    private ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
 
     @Override
     public void onLocationChange(Location location) {
@@ -87,7 +62,6 @@ public class SelectMapLocationActivity extends AppCompatActivity implements TMap
         mContext = this;
 
         final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.map_view2);
-        ima = (ImageView)findViewById(R.id.ima1);
         txt1 = (TextView)findViewById(R.id.txt1);
         bt1 = (Button)findViewById(R.id.bt1);
 
@@ -112,6 +86,7 @@ public class SelectMapLocationActivity extends AppCompatActivity implements TMap
         tmapview.setIconVisibility(false);
         tmapview.setCompassMode(false);
 
+        // 화면 중앙에 마커를 고정
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout linear = (LinearLayout)inflater.inflate(R.layout.fixed_mark,null);
 
@@ -121,6 +96,7 @@ public class SelectMapLocationActivity extends AppCompatActivity implements TMap
 
 
         tmapview.setOnTouchListener(new View.OnTouchListener(){
+            // 지도가 터치되어 중앙 좌표 값이 변할때마다 그 좌표의 주소 값을 표시
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 center_p = tmapview.getCenterPoint();
@@ -146,11 +122,11 @@ public class SelectMapLocationActivity extends AppCompatActivity implements TMap
         });
 
         bt1.setOnClickListener(new View.OnClickListener() {
+            // 현재 중앙 마커가 가리키고 있는 위치 좌표 정보를 넘김
             @Override
             public void onClick(View v) {
                 intent_select = new Intent();
                 intent_select.putExtra("input", address);
-                //Toast.makeText(SelectMapLocationActivity.this, address, Toast.LENGTH_SHORT).show();
                 intent_select.putExtra("lat", Double.toString(center_p.getLatitude()));
                 intent_select.putExtra("lon", Double.toString(center_p.getLongitude()));
                 setResult(1, intent_select);

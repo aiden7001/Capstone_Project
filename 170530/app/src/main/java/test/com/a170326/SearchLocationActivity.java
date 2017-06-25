@@ -1,15 +1,10 @@
 package test.com.a170326;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,37 +15,27 @@ import android.widget.Toast;
 
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
-import com.skp.Tmap.TMapMarkerItem;
+
 import com.skp.Tmap.TMapPOIItem;
-import com.skp.Tmap.TMapPoint;
-import com.skp.Tmap.TMapView;
-
 import java.util.ArrayList;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
-
 
 public class SearchLocationActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback{
 
     private TMapData Tmapdata = new TMapData();
     private TMapGpsManager tmapgps2 = null;
 
-    private EditText input_location;
-    private String location;
-    private Button location_bt;
-    private Button current_loc;
+    private EditText input_location;   // 검색창
+    private String location;       // 검색된 문자열 저장
+    private Button location_bt;     // 검색창에 입력된 내용을 검색
+    private Button current_loc;     // 현재위치 받아오기
+    private Button select_loc;      // 지도에서 위치 지정
     private String address;
     String start_lat;
     String start_lon;
     Intent intent_return;
     ListView listView = null;
 
-
     private GpsInfo start_dot;
-    TMapView tmapview;
-    TMapPOIItem item = new TMapPOIItem();
-    ArrayList<TMapPOIItem> POIItem = new ArrayList<TMapPOIItem>();
-
 
     @Override
     public void finish() {
@@ -61,9 +46,6 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
     protected void onResume() {
         super.onResume();
     }
-
-    private Button select_loc;
-    //private TMapPoint start_dot = null;
 
     @Override
     public void onLocationChange(Location location) {
@@ -82,7 +64,6 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
 
                 intent_return = new Intent();
                 intent_return.putExtra("input", address);
-                //Toast.makeText(SelectMapLocationActivity.this, address, Toast.LENGTH_SHORT).show();
                 intent_return.putExtra("lat", lat);
                 intent_return.putExtra("lon", lon);
                 setResult(2, intent_return);
@@ -102,7 +83,6 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
         tmapgps2.setProvider(tmapgps2.NETWORK_PROVIDER);    //연결된 인터넷으로 위치 파악
         //tmapgps2.setProvider(tmapgps2.GPS_PROVIDER);     //GPS로 위치 파악
         tmapgps2.OpenGps();
-        //start_dot = tmapgps2.getLocation();
 
         final ListViewAdapter adapter;
 
@@ -114,6 +94,7 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
 
         current_loc = (Button) findViewById(R.id.current_loc);
         current_loc.setOnClickListener(new View.OnClickListener() {
+            // 내 위치로 설정 버튼, 현재 위치를 받아와 출발지나 목적지로 설정 가능
             @Override
             public void onClick(View v) {
                 start_dot = new GpsInfo(SearchLocationActivity.this);
@@ -129,7 +110,6 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
                             public void onConvertToGPSToAddress(String s) {
                                 address = s;
                                 Log.i("eee:" + start_lat, start_lon);
-                                Toast.makeText(SearchLocationActivity.this, "뭐야", Toast.LENGTH_SHORT).show();
 
                             }
                         });
@@ -154,37 +134,9 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
         });
 
 
-                /*start_dot = tmapgps2.getLocation();
-                start_lat = Double.toString(start_dot.getLatitude());
-                start_lon= Double.toString(start_dot.getLongitude());
-                Log.i("eee:"+start_lat,start_lon);
-
-                if(start_lat!="0.0" || start_lon!="0.0"){
-                    Tmapdata.convertGpsToAddress(start_dot.getLatitude(), start_dot.getLongitude(), new TMapData.ConvertGPSToAddressListenerCallback() {
-                        @Override
-                        public void onConvertToGPSToAddress(String s) {
-                            address = s;
-
-                        }
-
-                    });
-                }
-                if(address!=null){
-                    intent_return = new Intent();
-                    intent_return.putExtra("input",address);
-                    Toast.makeText(SearchLocationActivity.this,address,Toast.LENGTH_SHORT).show();
-                    intent_return.putExtra("lat",start_lat);
-                    intent_return.putExtra("lon",start_lon);
-                    setResult(RESULT_OK,intent_return);
-                    finish();
-
-                }
-
-            }
-        });*/
-
         select_loc = (Button) findViewById(R.id.select_loc);
         select_loc.setOnClickListener(new View.OnClickListener() {
+            // 지도에서 지정 버튼, 지도를 움직여 가운데 마커에 해당하는 위치를 출발지나 목적지로 설정 가능
             @Override
             public void onClick(View v) {
                 Intent intent_map = new Intent(SearchLocationActivity.this, SelectMapLocationActivity.class);
@@ -193,30 +145,10 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
         });
 
         input_location = (EditText)findViewById(R.id.search_location);
-        input_location.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                //String filterText = s.toString();
-                //((ListviewAdapter)listView.getAdapter()).getFilter().filter(filterText);
-
-            }
-        });
 
         location_bt = (Button)findViewById(R.id.location_bt);
         location_bt.setOnClickListener(new View.OnClickListener() {
+            // TMAP에서 제공하는 POI에 검색창에 입력한 주소나 장소로 검색하여 받아온 정보를 LISTVIEW에 삽입
             @Override
             public void onClick(View v) {
                 adapter.clearItem();
@@ -226,7 +158,7 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
                     public void onFindAllPOI(ArrayList<TMapPOIItem> poiItem) {
                         for (int i = 0; i < poiItem.size(); i++) {
                             TMapPOIItem item = poiItem.get(i);
-                             Log.d("주소로 찾기", "POI Name: " + item.getPOIName().toString() + ", " + "Address: " + item.getPOIAddress().replace("null", "") + ", " + "Point: " + item.getPOIPoint().toString());
+                            Log.d("주소로 찾기", "POI Name: " + item.getPOIName().toString() + ", " + "Address: " + item.getPOIAddress().replace("null", "") + ", " + "Point: " + item.getPOIPoint().toString());
 
                             adapter.addItem(item.getPOIName(), item.getPOIAddress(), item.getPOIPoint().getLatitude(), item.getPOIPoint().getLongitude());
 
@@ -244,18 +176,17 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
         });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            // LISTVIEW에서 클릭된 ROW에 해당하는 주소 좌표 정보를 출발지나 목적지로 설정 가능
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ListViewItem item = (ListViewItem) parent.getItemAtPosition(position);
 
                 String titleStr = item.getTitle();
-                String addressStr = item.getDesc();
                 String latStr = String.valueOf(item.getLat());
                 String lonStr = String.valueOf(item.getLon());
 
                 intent_return = new Intent();
                 intent_return.putExtra("input", titleStr);
-                //Toast.makeText(SearchLocationActivity.this, address, Toast.LENGTH_SHORT).show();
                 intent_return.putExtra("lat", latStr);
                 intent_return.putExtra("lon", lonStr);
                 setResult(2, intent_return);

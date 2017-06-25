@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 
 public class FirstActivity extends AppCompatActivity {
+    //Button 선언
     private Button findroute;
     private Button setting;
     private Button showmap;
@@ -35,7 +36,7 @@ public class FirstActivity extends AppCompatActivity {
     private TextView state;
 
     static String location;
-    String check_state = "";
+    String check_state = ""; //주차모드에서의 내 자전거의 상태를 확인(도난 상태인지 비콘이 없는 상태인지 등 확인하는 변수)
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,24 +47,23 @@ public class FirstActivity extends AppCompatActivity {
         setting = (Button) findViewById(R.id.setting);
         showmap = (Button) findViewById(R.id.map);
         mode = (ToggleButton) findViewById(R.id.bicyclemode);
-        //state = (TextView) findViewById(R.id.showstate);
-
 
         findroute.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) { //네비게이션 실행
                 Log.d("mini","1");
                 startActivity(new Intent(FirstActivity.this, MainActivity.class));
                 Log.d("mini","2");
             }
         });
 
-        setting.setOnClickListener(new View.OnClickListener() {
+        setting.setOnClickListener(new View.OnClickListener() { //설정 버튼 클릭시
             @Override
             public void onClick(View v) {
             }
         });
 
+        //현재 위치와 지도 띄우기, 내 자전거의 위치와 내 위치로부터 가까운 자전거 주차장들의 위치를 확인할 수 있다.
         showmap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,6 +82,7 @@ public class FirstActivity extends AppCompatActivity {
             }
         });
 
+        //주차모드, 주행모드 설정
         mode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
