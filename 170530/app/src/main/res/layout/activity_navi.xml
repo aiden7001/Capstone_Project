@@ -5,7 +5,7 @@
     android:weightSum="1">
     <TextView
         android:layout_width="30dp"
-        android:id="@+id/a1"
+        android:id="@+id/left_light"
         android:layout_height="match_parent" />
 
     <RelativeLayout
@@ -15,7 +15,7 @@
         android:id="@+id/naviinfo"
         android:layout_weight="1.10"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/a1">
+        android:layout_toEndOf="@+id/left_light">
 
         <TextView
             android:id="@+id/dest_info"
@@ -106,7 +106,7 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/right_light"
         android:layout_width="30dp"
         android:layout_toRightOf="@+id/naviinfo"
         android:layout_height="match_parent"
