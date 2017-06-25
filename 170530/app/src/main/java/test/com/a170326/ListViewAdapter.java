@@ -130,4 +130,6 @@ public class ListViewAdapter extends BaseAdapter implements Filterable {
         listViewItemList.clear();
     }
 
+    public void nofity(){notifyDataSetChanged();}
+
 }

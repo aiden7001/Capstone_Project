@@ -235,7 +235,7 @@ public class SearchLocationActivity extends AppCompatActivity implements TMapGps
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                adapter.notifyDataSetChanged();
+                                adapter.nofity();
                             }
                         });
                     }

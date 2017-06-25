@@ -323,7 +323,7 @@ public class RouteActivity extends AppCompatActivity {
                 showdistance.setText(leftdistance);
                 showtime.setText(lefttime);
             }
-        }, 2000);
+        }, 3000);
 
         /*route.setOnClickListener(new View.OnClickListener() {
             @Override
